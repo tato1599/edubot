@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduBot - Agente Escolar Inteligente</title>
+    <title>EduBot - TecNM ITCJ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="/static/js/gsap.min.js"></script>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
@@ -26,35 +26,30 @@
                 <div class="logo-ring ring-2"></div>
                 <div class="logo-ring ring-3"></div>
                 <div class="logo-core">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                        <path d="M12 9h.01"/>
-                        <path d="M8 22h8"/>
-                        <path d="M7 10l-3 2v2l3-2z"/>
-                        <path d="M17 10l3 2v2l-3-2z"/>
-                    </svg>
+                    <img src="/static/img/itcj.png" alt="Logo ITCJ" />
                 </div>
             </div>
             
             <h1 class="welcome-title">
                 <span class="title-line">EduBot</span>
-                <span class="title-sub">Agente Escolar Inteligente</span>
+                <span class="title-sub">TecNM ITCJ</span>
             </h1>
             
             <p class="welcome-desc">
-                Tu asistente personal para trámites escolares y nutrición basada en SMAE. 
-                Información precisa, respuestas instantáneas.
+                Tu asistente inteligente del Instituto Tecnológico de Ciudad Juárez. 
+                Trámites escolares, retícula ISC, nutrición SMAE, locales de comida y más.
             </p>
             
             <div class="feature-pills">
                 <span class="pill">🎓 Trámites</span>
+                <span class="pill">📚 Retícula ISC</span>
+                <span class="pill">🍔 Locales de Comida</span>
                 <span class="pill">🥗 Nutrición SMAE</span>
-                <span class="pill">🧠 IA Local</span>
             </div>
             
             <button id="start-btn" class="start-btn">
                 <span>Iniciar conversación</span>
-                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"/>
                     <polyline points="12 5 19 12 12 19"/>
                 </svg>
@@ -69,24 +64,20 @@
         <header class="chat-header">
             <div class="header-left">
                 <button id="back-btn" class="icon-btn" aria-label="Volver">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"/>
                         <polyline points="12 19 5 12 12 5"/>
                     </svg>
                 </button>
                 <div class="agent-info">
                     <div class="agent-avatar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                            <path d="M12 9h.01"/>
-                            <path d="M8 22h8"/>
-                        </svg>
+                        <img src="/static/img/itcj.png" alt="ITCJ" />
                     </div>
                     <div class="agent-meta">
                         <h2>EduBot</h2>
                         <span class="status">
                             <span class="status-dot"></span>
-                            En línea • Modelo Local
+                            En línea • TecNM ITCJ
                         </span>
                     </div>
                 </div>
@@ -104,11 +95,11 @@
             <div class="input-wrapper">
                 <textarea 
                     id="message-input" 
-                    placeholder="Pregunta sobre trámites escolares o nutrición SMAE..."
+                    placeholder="Pregunta sobre trámites, retícula, comida o nutrición..."
                     rows="1"
                 ></textarea>
                 <button id="send-btn" class="send-btn" aria-label="Enviar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"/>
                         <polygon points="22 2 15 22 11 13 2 9"/>
                     </svg>
