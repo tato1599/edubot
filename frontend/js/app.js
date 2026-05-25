@@ -434,116 +434,110 @@ function setupEventListeners() {
 }
 
 // ── 💥 EXPLOSIÓN ÉPICA AL INICIAR CONVERSACIÓN ──
+let activeSupernovaTl = null;
+
 function goToChat() {
     if (typeof gsap === 'undefined') {
         switchToChatSimple();
         return;
     }
     
-    const welcomeContent = document.querySelector('.welcome-content');
-    const logoContainer = document.querySelector('.logo-container');
+    // Limpiar cualquier estado residual de una vuelta anterior
+    cleanupWelcomeState();
     
-    // 1. CREAR EXPLOSIÓN DE PARTÍCULAS
+    // 1. CREAR EXPLOSIÓN DE PARTÍCULAS (optimizada, menos partículas)
     createSupernovaExplosion();
     
-    // 2. TIMELINE ÉPICO
-    const masterTl = gsap.timeline({
-        onComplete: switchToChat
+    // 2. TIMELINE ÉPICO (más corto y fluido)
+    activeSupernovaTl = gsap.timeline({
+        onComplete: () => {
+            activeSupernovaTl = null;
+            switchToChat();
+        }
     });
     
-    // Fase 1: Logo se carga con energía
-    masterTl.to('.logo-core', {
+    const tl = activeSupernovaTl;
+    
+    // Fase 1: Logo rota y escala (más rápido)
+    tl.to('.logo-core', {
         scale: 1.5,
         rotation: 720,
-        duration: 0.8,
-        ease: 'power4.in'
+        duration: 0.5,
+        ease: 'power3.in'
     })
     // Fase 2: Anillos expanden explosivamente
     .to('.logo-ring', {
         scale: 3,
         opacity: 0,
-        borderColor: 'rgba(220, 38, 38, 0.9)',
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power4.out'
-    }, '-=0.5')
-    // Fase 3: Título hace glitch masivo
+        duration: 0.4,
+        stagger: 0.08,
+        ease: 'power3.out'
+    }, '-=0.3')
+    // Fase 3: Título escala con glow (usamos transform, no textShadow que causa repaint)
     .to('.title-line', {
-        scale: 1.2,
-        textShadow: '0 0 100px rgba(220, 38, 38, 0.8), 0 0 200px rgba(245, 158, 11, 0.4)',
-        duration: 0.3,
-        ease: 'power4.in'
-    }, '-=0.4')
-    // Fase 4: Shake de cámara (vibración intensa)
-    .to('.welcome-screen', {
-        x: '+=15',
-        duration: 0.05,
-        repeat: 5,
-        yoyo: true,
-        ease: 'none'
-    }, '-=0.2')
-    // Fase 5: Zoom out masivo con desvanecimiento
+        scale: 1.15,
+        opacity: 0.3,
+        duration: 0.25,
+        ease: 'power3.in'
+    }, '-=0.3')
+    // Fase 4: Shake de cámara vía CSS (mucho más performante)
+    .call(() => {
+        welcomeScreen.classList.add('shaking');
+        setTimeout(() => welcomeScreen.classList.remove('shaking'), 400);
+    }, null, '-=0.15')
+    // Fase 5: Zoom out masivo
     .to('.welcome-content', {
-        scale: 3,
-        opacity: 0,
-        duration: 0.6,
-        ease: 'power4.in'
-    })
-    // Fase 6: Fondo colapsa
-    .to('.bg-mesh', {
-        scale: 0,
+        scale: 2.5,
         opacity: 0,
         duration: 0.5,
         ease: 'power3.in'
-    }, '-=0.4')
-    // Fase 7: Flash blanco
-    .to('.flash-overlay', {
-        opacity: 1,
-        duration: 0.2,
-        ease: 'power2.out',
-        onStart: () => {
-            const flash = document.createElement('div');
-            flash.className = 'flash-overlay';
-            flash.style.cssText = 'position:fixed;inset:0;background:#fff;opacity:0;z-index:9999;pointer-events:none;';
-            document.body.appendChild(flash);
-        }
-    })
-    .to('.flash-overlay', {
+    }, '-=0.1')
+    // Fase 6: Fondo colapsa
+    .to('.bg-mesh', {
+        scale: 0.5,
         opacity: 0,
         duration: 0.4,
-        ease: 'power2.in',
-        onComplete: () => {
-            const flash = document.querySelector('.flash-overlay');
-            if (flash) flash.remove();
-        }
-    });
+        ease: 'power2.in'
+    }, '-=0.3')
+    // Fase 7: Flash blanco rápido
+    .call(() => {
+        const flash = document.createElement('div');
+        flash.className = 'flash-overlay';
+        flash.style.cssText = 'position:fixed;inset:0;background:#fff;opacity:0.9;z-index:9999;pointer-events:none;';
+        document.body.appendChild(flash);
+        gsap.to(flash, {
+            opacity: 0,
+            duration: 0.35,
+            ease: 'power2.in',
+            onComplete: () => flash.remove()
+        });
+    }, null, '-=0.1');
     
     function switchToChat() {
         welcomeScreen.classList.add('hidden');
         chatScreen.classList.remove('hidden');
         
-        // Animación de entrada del chat con efecto de materialización
+        // Animación de entrada del chat (más ligera)
         gsap.fromTo('.chat-screen', 
-            { opacity: 0, scale: 0.8 },
-            { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' }
         );
         
         gsap.fromTo('.chat-header', 
-            { y: -100, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.2 }
+            { y: -60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', delay: 0.1 }
         );
         
         gsap.fromTo('.chat-messages',
             { opacity: 0 },
-            { opacity: 1, duration: 0.5, delay: 0.4 }
+            { opacity: 1, duration: 0.4, delay: 0.2 }
         );
         
         gsap.fromTo('.chat-input-area',
-            { y: 100, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.7, delay: 0.5, ease: 'power3.out' }
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, delay: 0.3, ease: 'power3.out' }
         );
         
-        // Mensaje de bienvenida con typing effect
         setTimeout(() => {
             addBotMessage(
                 "¡SISTEMA ACTIVADO! Soy EduBot, tu asistente inteligente del TecNM ITCJ.\n\n" +
@@ -555,67 +549,66 @@ function goToChat() {
                 "• ⚖️ Reglamento TecNM\n\n" +
                 "¿En qué puedo asistirte, Padawan?"
             );
-        }, 800);
+        }, 600);
     }
 }
 
-// ── 🌟 SUPERNOVA EXPLOSION ──
+// ── 🌟 SUPERNOVA EXPLOSION (optimizada) ──
 function createSupernovaExplosion() {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    const particleCount = 60;
+    const particleCount = 25; // Reducido de 60 a 25
+    
+    const fragment = document.createDocumentFragment();
     
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
+        particle.className = 'supernova-particle';
+        const size = Math.random() * 6 + 3;
+        const color = Math.random() > 0.5 ? '#DC2626' : '#F59E0B';
         particle.style.cssText = `
-            position: fixed;
-            width: ${Math.random() * 8 + 4}px;
-            height: ${Math.random() * 8 + 4}px;
-            background: ${Math.random() > 0.5 ? '#DC2626' : '#F59E0B'};
-            border-radius: 50%;
+            width: ${size}px;
+            height: ${size}px;
+            background: ${color};
             left: ${centerX}px;
             top: ${centerY}px;
-            z-index: 9998;
-            pointer-events: none;
-            box-shadow: 0 0 20px currentColor;
+            box-shadow: 0 0 10px ${color};
         `;
-        document.body.appendChild(particle);
+        fragment.appendChild(particle);
         
-        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
-        const distance = 300 + Math.random() * 500;
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.8;
+        const distance = 200 + Math.random() * 350;
         
         gsap.to(particle, {
             x: Math.cos(angle) * distance,
             y: Math.sin(angle) * distance,
             scale: 0,
             opacity: 0,
-            duration: 0.8 + Math.random() * 0.4,
-            ease: 'power4.out',
+            duration: 0.6 + Math.random() * 0.3,
+            ease: 'power3.out',
             onComplete: () => particle.remove()
         });
     }
     
-    // Anillo de choque (shockwave)
+    document.body.appendChild(fragment);
+    
+    // Shockwave simplificado (1 anillo en vez de sombras complejas)
     const shockwave = document.createElement('div');
+    shockwave.className = 'shockwave-ring';
     shockwave.style.cssText = `
-        position: fixed;
-        width: 100px;
-        height: 100px;
-        border: 4px solid rgba(220, 38, 38, 0.8);
-        border-radius: 50%;
-        left: ${centerX - 50}px;
-        top: ${centerY - 50}px;
-        z-index: 9997;
-        pointer-events: none;
-        box-shadow: 0 0 60px rgba(220, 38, 38, 0.6), inset 0 0 60px rgba(220, 38, 38, 0.3);
+        width: 80px;
+        height: 80px;
+        border: 3px solid rgba(220, 38, 38, 0.7);
+        left: ${centerX - 40}px;
+        top: ${centerY - 40}px;
     `;
     document.body.appendChild(shockwave);
     
     gsap.to(shockwave, {
-        scale: 15,
+        scale: 12,
         opacity: 0,
-        duration: 1,
-        ease: 'power4.out',
+        duration: 0.8,
+        ease: 'power3.out',
         onComplete: () => shockwave.remove()
     });
 }
@@ -633,8 +626,47 @@ function switchToChatSimple() {
     }, 300);
 }
 
+// ── 🧹 LIMPIAR TODO ESTADO DE ANIMACIONES ──
+function cleanupWelcomeState() {
+    // 1. Matar timeline activo
+    if (activeSupernovaTl) {
+        activeSupernovaTl.kill();
+        activeSupernovaTl = null;
+    }
+    
+    // 2. Limpiar partículas y shockwave huérfanos
+    document.querySelectorAll('.supernova-particle, .shockwave-ring, .flash-overlay').forEach(el => el.remove());
+    
+    // 3. Resetear clases del welcome screen
+    welcomeScreen.classList.remove('shaking');
+    
+    // 4. Resetear estilos inline del logo
+    const logoCore = document.querySelector('.logo-core');
+    const logoRings = document.querySelectorAll('.logo-ring');
+    const titleLine = document.querySelector('.title-line');
+    const bgMesh = document.querySelector('.bg-mesh');
+    
+    if (logoCore) gsap.set(logoCore, { clearProps: 'all' });
+    if (titleLine) gsap.set(titleLine, { clearProps: 'all' });
+    if (bgMesh) gsap.set(bgMesh, { clearProps: 'all' });
+    logoRings.forEach(ring => gsap.set(ring, { clearProps: 'all' }));
+    
+    // 5. Resetear botón start
+    startBtn.classList.remove('clicked');
+    
+    // 6. Asegurar que welcome-content sea visible
+    const welcomeContent = document.querySelector('.welcome-content');
+    if (welcomeContent) {
+        welcomeContent.style.opacity = '1';
+        welcomeContent.style.transform = 'none';
+    }
+}
+
 function goToWelcome() {
     const switchToWelcome = () => {
+        // Limpiar TODO antes de mostrar
+        cleanupWelcomeState();
+        
         chatScreen.classList.add('hidden');
         welcomeScreen.classList.remove('hidden');
         welcomeScreen.style.opacity = '1';
@@ -649,8 +681,8 @@ function goToWelcome() {
         if (typeof gsap !== 'undefined') {
             try {
                 gsap.fromTo('.welcome-content > *',
-                    { y: 30, opacity: 0 },
-                    { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, ease: 'power3.out' }
+                    { y: 20, opacity: 0 },
+                    { y: 0, opacity: 1, stagger: 0.06, duration: 0.4, ease: 'power3.out' }
                 );
             } catch (e) {}
         }
@@ -661,8 +693,7 @@ function goToWelcome() {
             gsap.to('.chat-screen', {
                 opacity: 0,
                 scale: 0.95,
-                x: 50,
-                duration: 0.4,
+                duration: 0.3,
                 ease: 'power2.in',
                 onComplete: switchToWelcome
             });
