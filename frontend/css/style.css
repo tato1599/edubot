@@ -592,8 +592,7 @@ html, body {
     flex-direction: column;
     background: transparent;
     align-items: stretch;
-    justify-content: flex-start;
-    position: relative; /* para que el overlay de carga se posicione correctamente */
+    justify-content: space-between;
 }
 
 /* Header con glassmorphism rojo */
