@@ -214,6 +214,24 @@ class RAGEngine:
                         "fuente": "comedores"
                     })
         
+        # Reglamento de Estudiantes del TecNM
+        reglamento_path = os.path.join(self.data_dir, "reglamento_estudiantes.json")
+        if os.path.exists(reglamento_path):
+            with open(reglamento_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                
+                for doc in data.get("documentos", []):
+                    self.documents.append({
+                        "id": doc["id"],
+                        "categoria": doc["categoria"],
+                        "titulo": doc["titulo"],
+                        "contenido": doc["contenido"],
+                        "keywords": doc.get("keywords", ["reglamento", "estudiantes", "tecnm"]),
+                        "fuente": "reglamento_estudiantes"
+                    })
+                
+                print(f"[RAG] {len(data.get('documentos', []))} documentos del Reglamento de Estudiantes indexados.")
+        
         # SMAE (Sistema Mexicano de Alimentos Equivalentes - completo)
         smae_path = os.path.join(self.data_dir, "smae.json")
         if os.path.exists(smae_path):

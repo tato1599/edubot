@@ -151,7 +151,8 @@ SYSTEM_PROMPT = (
     "(1) trámites escolares, (2) información de la carrera de Ingeniería en Sistemas Computacionales, "
     "(3) nutrición y dietas saludables basadas en el SMAE (Sistema Mexicano de Alimentos Equivalentes), "
     "(4) recomendaciones de comida económica para estudiantes con poco presupuesto, "
-    "y (5) locales de comida dentro y alrededor del campus. "
+    "(5) locales de comida dentro y alrededor del campus, "
+    "y (6) derechos, obligaciones y normas del Reglamento de Estudiantes del TecNM. "
     "Responde SIEMPRE en español, de forma clara, concisa y amigable. "
     "Usa viñetas (•) para listas. Ve directo a la respuesta sin frases introductorias como 'como asistente' o 'estoy aquí para'. "
     "\n\n"
@@ -201,6 +202,13 @@ def expand_query(query: str) -> str:
         'alimentacion': 'nutricion sma dieta alimentos saludable',
         'nutricion': 'nutricion sma dieta alimentos estudiante saludable',
         'smae': 'sistema mexicano alimentos equivalentes nutricion porciones calorias',
+        'reglamento': 'reglamento estudiantes tecnormas derechos obligaciones',
+        'derechos': 'reglamento estudiantes derechos obligaciones normas',
+        'obligaciones': 'reglamento estudiantes derechos obligaciones normas',
+        'sancion': 'reglamento estudiantes conductas sanciones disciplina',
+        'conducta': 'reglamento estudiantes conductas prohibidas sanciones',
+        'baja': 'reglamento estudiantes baja temporal definitiva reinscripcion',
+        'equidad': 'reglamento estudiantes equidad genero derechos humanos',
     }
     
     for key, expansion in synonyms.items():

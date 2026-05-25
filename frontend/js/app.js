@@ -450,10 +450,11 @@ function goToChat() {
             addBotMessage(
                 "¡Hola! Soy EduBot, tu asistente del TecNM ITCJ.\n\n" +
                 "Puedo ayudarte con:\n" +
-                "• 🎓 Trámites escolares (inscripción, reinscripción, becas, titulación)\n" +
+                "• 🎓 Trámites escolares (inscripción, reinscripción, constancias, becas, titulación)\n" +
                 "• 📚 Retícula de Ingeniería en Sistemas Computacionales\n" +
                 "• 🍔 Locales de comida (Doña Pelos, Café Tec, Manos Sucias)\n" +
-                "• 🥗 Nutrición SMAE y dietas económicas para estudiantes\n\n" +
+                "• 🥗 Nutrición SMAE y dietas económicas para estudiantes\n" +
+                "• ⚖️ Reglamento de Estudiantes del TecNM (derechos, obligaciones, sanciones)\n\n" +
                 "¿En qué puedo ayudarte hoy?"
             );
         }, 400);
