@@ -74,3 +74,6 @@ models/
 
 # Logs
 *.log
+
+# Downloaded binaries
+cloudflared.deb
