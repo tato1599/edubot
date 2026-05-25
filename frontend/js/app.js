@@ -27,48 +27,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Animaciones GSAP de entrada ──
 function initAnimations() {
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    
-    tl.from('.logo-core', {
-        scale: 0,
-        rotation: 180,
-        duration: 1,
-        ease: 'back.out(1.7)'
-    })
-    .from('.logo-ring', {
-        scale: 0,
-        opacity: 0,
-        stagger: 0.15,
-        duration: 0.8
-    }, '-=0.6')
-    .from('.title-line', {
-        y: 40,
-        opacity: 0,
-        duration: 0.8
-    }, '-=0.4')
-    .from('.title-sub', {
-        y: 20,
-        opacity: 0,
-        duration: 0.6
-    }, '-=0.5')
-    .from('.welcome-desc', {
-        y: 20,
-        opacity: 0,
-        duration: 0.6
-    }, '-=0.4')
-    .from('.pill', {
-        scale: 0.8,
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.5,
-        ease: 'back.out(1.4)'
-    }, '-=0.3')
-    .from('.start-btn', {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'back.out(1.2)'
-    }, '-=0.2');
+    // Verificar que GSAP esté disponible
+    if (typeof gsap === 'undefined') {
+        console.warn('[EduBot] GSAP no cargó. Usando UI sin animaciones.');
+        return;
+    }
+
+    try {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        
+        tl.from('.logo-core', {
+            scale: 0,
+            rotation: 180,
+            duration: 1,
+            ease: 'back.out(1.7)'
+        })
+        .from('.logo-ring', {
+            scale: 0,
+            opacity: 0,
+            stagger: 0.15,
+            duration: 0.8
+        }, '-=0.6')
+        .from('.title-line', {
+            y: 40,
+            opacity: 0,
+            duration: 0.8
+        }, '-=0.4')
+        .from('.title-sub', {
+            y: 20,
+            opacity: 0,
+            duration: 0.6
+        }, '-=0.5')
+        .from('.welcome-desc', {
+            y: 20,
+            opacity: 0,
+            duration: 0.6
+        }, '-=0.4')
+        .from('.pill', {
+            scale: 0.8,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.5,
+            ease: 'back.out(1.4)'
+        }, '-=0.3')
+        .from('.start-btn', {
+            y: 30,
+            opacity: 0,
+            duration: 0.7,
+            ease: 'back.out(1.2)'
+        }, '-=0.2');
+    } catch (e) {
+        console.warn('[EduBot] Error en animaciones:', e);
+    }
 }
 
 // ── Generador de partículas ──
@@ -85,16 +95,22 @@ function generateParticles() {
         p.style.height = size + 'px';
         particlesContainer.appendChild(p);
         
-        // Animar con GSAP
-        gsap.to(p, {
-            y: -100 - Math.random() * 200,
-            x: (Math.random() - 0.5) * 100,
-            opacity: 0,
-            duration: 5 + Math.random() * 5,
-            repeat: -1,
-            delay: Math.random() * 5,
-            ease: 'none'
-        });
+        // Animar con GSAP si está disponible
+        if (typeof gsap !== 'undefined') {
+            try {
+                gsap.to(p, {
+                    y: -100 - Math.random() * 200,
+                    x: (Math.random() - 0.5) * 100,
+                    opacity: 0,
+                    duration: 5 + Math.random() * 5,
+                    repeat: -1,
+                    delay: Math.random() * 5,
+                    ease: 'none'
+                });
+            } catch (e) {
+                // Ignorar error de animación de partículas
+            }
+        }
     }
 }
 
@@ -121,55 +137,66 @@ function setupEventListeners() {
 
 // ── Navegación ──
 function goToChat() {
-    // Animar salida de welcome
-    gsap.to(welcomeScreen, {
-        opacity: 0,
-        scale: 0.95,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-            welcomeScreen.classList.add('hidden');
-            chatScreen.classList.remove('hidden');
-            
-            // Animar entrada del chat
-            gsap.fromTo(chatScreen, 
-                { opacity: 0, x: 50 },
-                { opacity: 1, x: 0, duration: 0.6, ease: 'power3.out' }
+    const switchToChat = () => {
+        welcomeScreen.classList.add('hidden');
+        chatScreen.classList.remove('hidden');
+        chatScreen.style.opacity = '1';
+        chatScreen.style.transform = 'none';
+        
+        // Mostrar mensaje de bienvenida del bot
+        setTimeout(() => {
+            addBotMessage(
+                "¡Hola! Soy EduBot, tu asistente escolar.\n\n" +
+                "Puedo ayudarte con:\n" +
+                "• 🎓 Trámites escolares (inscripción, reinscripción, constancias, becas, titulación)\n" +
+                "• 🥗 Nutrición escolar según el SMAE (menús, porciones, recomendaciones)\n\n" +
+                "¿En qué puedo ayudarte hoy?"
             );
-            
-            // Mostrar mensaje de bienvenida del bot
-            setTimeout(() => {
-                addBotMessage(
-                    "¡Hola! Soy EduBot, tu asistente escolar.\n\n" +
-                    "Puedo ayudarte con:\n" +
-                    "• 🎓 Trámites escolares (inscripción, reinscripción, constancias, becas, titulación)\n" +
-                    "• 🥗 Nutrición escolar según el SMAE (menús, porciones, recomendaciones)\n\n" +
-                    "¿En qué puedo ayudarte hoy?"
-                );
-            }, 400);
+        }, 300);
+    };
+
+    // Intentar animar con GSAP, si falla hacer el cambio directo
+    if (typeof gsap !== 'undefined') {
+        try {
+            gsap.to(welcomeScreen, {
+                opacity: 0,
+                scale: 0.95,
+                duration: 0.5,
+                ease: 'power2.in',
+                onComplete: switchToChat
+            });
+            return;
+        } catch (e) {
+            console.warn('[EduBot] GSAP falló en transición, usando fallback:', e);
         }
-    });
+    }
+    switchToChat();
 }
 
 function goToWelcome() {
-    gsap.to(chatScreen, {
-        opacity: 0,
-        x: -50,
-        duration: 0.4,
-        ease: 'power2.in',
-        onComplete: () => {
-            chatScreen.classList.add('hidden');
-            welcomeScreen.classList.remove('hidden');
-            
-            gsap.fromTo(welcomeScreen,
-                { opacity: 0, scale: 0.95 },
-                { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }
-            );
-            
-            // Limpiar chat
-            chatMessages.innerHTML = '';
+    const switchToWelcome = () => {
+        chatScreen.classList.add('hidden');
+        welcomeScreen.classList.remove('hidden');
+        welcomeScreen.style.opacity = '1';
+        welcomeScreen.style.transform = 'none';
+        chatMessages.innerHTML = '';
+    };
+
+    if (typeof gsap !== 'undefined') {
+        try {
+            gsap.to(chatScreen, {
+                opacity: 0,
+                x: -50,
+                duration: 0.4,
+                ease: 'power2.in',
+                onComplete: switchToWelcome
+            });
+            return;
+        } catch (e) {
+            console.warn('[EduBot] GSAP falló en transición, usando fallback:', e);
         }
-    });
+    }
+    switchToWelcome();
 }
 
 // ── Chat Functions ──
@@ -250,12 +277,21 @@ function createMessageElement(type, text, sources = []) {
 }
 
 function animateMessageIn(element) {
-    gsap.to(element, {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: 'power3.out'
-    });
+    element.style.opacity = '1';
+    element.style.transform = 'translateY(0)';
+    
+    if (typeof gsap !== 'undefined') {
+        try {
+            gsap.to(element, {
+                opacity: 1,
+                y: 0,
+                duration: 0.5,
+                ease: 'power3.out'
+            });
+        } catch (e) {
+            // Fallback ya aplicado arriba
+        }
+    }
 }
 
 function showTyping() {
@@ -263,6 +299,8 @@ function showTyping() {
     const div = document.createElement('div');
     div.className = 'message bot typing-indicator';
     div.id = 'typing-indicator';
+    div.style.opacity = '1';
+    div.style.transform = 'translateY(0)';
     div.innerHTML = `
         <div class="message-avatar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -282,19 +320,29 @@ function showTyping() {
     chatMessages.appendChild(div);
     scrollToBottom();
     
-    gsap.to(div, { opacity: 1, y: 0, duration: 0.3 });
+    if (typeof gsap !== 'undefined') {
+        try {
+            gsap.to(div, { opacity: 1, y: 0, duration: 0.3 });
+        } catch (e) {}
+    }
 }
 
 function hideTyping() {
     isWaiting = false;
     const indicator = document.getElementById('typing-indicator');
     if (indicator) {
-        gsap.to(indicator, {
-            opacity: 0,
-            y: -10,
-            duration: 0.3,
-            onComplete: () => indicator.remove()
-        });
+        if (typeof gsap !== 'undefined') {
+            try {
+                gsap.to(indicator, {
+                    opacity: 0,
+                    y: -10,
+                    duration: 0.3,
+                    onComplete: () => indicator.remove()
+                });
+                return;
+            } catch (e) {}
+        }
+        indicator.remove();
     }
 }
 
