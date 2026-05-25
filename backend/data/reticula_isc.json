@@ -1,0 +1,178 @@
+{
+  "carrera": {
+    "nombre": "Ingeniería en Sistemas Computacionales",
+    "clave_plan": "ISIC-2010-224",
+    "institucion": "TecNM ITCJ",
+    "total_materias": 58,
+    "total_creditos_plan": 260,
+    "estructura_creditos": {
+      "materias_base": 210,
+      "especialidad": 25,
+      "residencia_profesional": 10,
+      "servicio_social": 10,
+      "actividades_complementarias": 5
+    }
+  },
+  "semestres": [
+    {
+      "numero": 1,
+      "total_materias": 6,
+      "creditos_semestre": 27,
+      "materias": [
+        {"nombre": "Cálculo Diferencial", "clave": "ACF-0901", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas"},
+        {"nombre": "Fundamentos de Programación", "clave": "AED-1285", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "programacion", "nota": "Anteriormente SCD-1008"},
+        {"nombre": "Taller de Ética", "clave": "ACA-0907", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "humanidades"},
+        {"nombre": "Matemáticas Discretas", "clave": "AEF-1041", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas"},
+        {"nombre": "Taller de Administración", "clave": "SCH-1024", "horas_teoria": 1, "horas_practica": 3, "creditos": 4, "area": "administracion"},
+        {"nombre": "Fundamentos de Investigación", "clave": "ACC-0906", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "investigacion"}
+      ]
+    },
+    {
+      "numero": 2,
+      "total_materias": 6,
+      "creditos_semestre": 28,
+      "materias": [
+        {"nombre": "Cálculo Integral", "clave": "ACF-0902", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas", "prerequisitos": ["Cálculo Diferencial"]},
+        {"nombre": "Programación Orientada a Objetos", "clave": "AED-1286", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "programacion", "prerequisitos": ["Fundamentos de Programación"], "nota": "Anteriormente SCD-1020"},
+        {"nombre": "Contabilidad Financiera", "clave": "AEC-1008", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "administracion"},
+        {"nombre": "Química", "clave": "AEC-1058", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "ciencias_basicas"},
+        {"nombre": "Álgebra Lineal", "clave": "ACF-0903", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas"},
+        {"nombre": "Probabilidad y Estadística", "clave": "AEF-1052", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas"}
+      ]
+    },
+    {
+      "numero": 3,
+      "total_materias": 6,
+      "creditos_semestre": 28,
+      "materias": [
+        {"nombre": "Cálculo Vectorial", "clave": "ACF-0904", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas", "prerequisitos": ["Cálculo Integral"]},
+        {"nombre": "Estructura de Datos", "clave": "AED-1026", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "programacion", "prerequisitos": ["Programación Orientada a Objetos"]},
+        {"nombre": "Cultura Empresarial", "clave": "SCC-1005", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "administracion"},
+        {"nombre": "Investigación de Operaciones", "clave": "SCC-1013", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "matematicas", "prerequisitos": ["Probabilidad y Estadística"]},
+        {"nombre": "Desarrollo Sustentable", "clave": "ACD-0908", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "humanidades"},
+        {"nombre": "Física General", "clave": "SCF-1006", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "ciencias_basicas"}
+      ]
+    },
+    {
+      "numero": 4,
+      "total_materias": 6,
+      "creditos_semestre": 29,
+      "materias": [
+        {"nombre": "Ecuaciones Diferenciales", "clave": "ACF-0905", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "matematicas", "prerequisitos": ["Cálculo Vectorial"]},
+        {"nombre": "Métodos Numéricos", "clave": "SCC-1017", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "matematicas", "prerequisitos": ["Cálculo Vectorial"]},
+        {"nombre": "Tópicos Avanzados de Programación", "clave": "SCD-1027", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "programacion", "prerequisitos": ["Estructura de Datos"]},
+        {"nombre": "Fundamentos de Base de Datos", "clave": "AEF-1031", "horas_teoria": 3, "horas_practica": 2, "creditos": 5, "area": "bases_de_datos", "prerequisitos": ["Estructura de Datos"]},
+        {"nombre": "Simulación", "clave": "SCD-1022", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "ingenieria_software", "prerequisitos": ["Probabilidad y Estadística"]},
+        {"nombre": "Principios Eléctricos y Aplicaciones Digitales", "clave": "SCD-1018", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "hardware", "prerequisitos": ["Física General"]}
+      ]
+    },
+    {
+      "numero": 5,
+      "total_materias": 6,
+      "creditos_semestre": 25,
+      "materias": [
+        {"nombre": "Graficación", "clave": "SCC-1010", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "programacion", "prerequisitos": ["Métodos Numéricos"]},
+        {"nombre": "Fundamentos de Telecomunicaciones", "clave": "AEC-1034", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "redes", "prerequisitos": ["Principios Eléctricos y Aplicaciones Digitales"]},
+        {"nombre": "Sistemas Operativos", "clave": "AEC-1061", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "sistemas", "prerequisitos": ["Estructura de Datos"]},
+        {"nombre": "Taller de Base de Datos", "clave": "SCA-1025", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "bases_de_datos", "prerequisitos": ["Fundamentos de Base de Datos"]},
+        {"nombre": "Fundamentos de Ingeniería de Software", "clave": "SCC-1007", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "ingenieria_software", "prerequisitos": ["Tópicos Avanzados de Programación"]},
+        {"nombre": "Arquitectura de Computadoras", "clave": "SCD-1003", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "hardware", "prerequisitos": ["Principios Eléctricos y Aplicaciones Digitales"]}
+      ]
+    },
+    {
+      "numero": 6,
+      "total_materias": 6,
+      "creditos_semestre": 28,
+      "materias": [
+        {"nombre": "Lenguajes y Autómatas I", "clave": "SCD-1015", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "teoria_computacion"},
+        {"nombre": "Redes de Computadoras", "clave": "SCD-1021", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "redes", "prerequisitos": ["Fundamentos de Telecomunicaciones"]},
+        {"nombre": "Taller de Sistemas Operativos", "clave": "SCA-1026", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "sistemas", "prerequisitos": ["Sistemas Operativos"]},
+        {"nombre": "Administración de Base de Datos", "clave": "SCB-1001", "horas_teoria": 1, "horas_practica": 4, "creditos": 5, "area": "bases_de_datos", "prerequisitos": ["Taller de Base de Datos"]},
+        {"nombre": "Ingeniería de Software", "clave": "SCD-1011", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "ingenieria_software", "prerequisitos": ["Fundamentos de Ingeniería de Software"]},
+        {"nombre": "Lenguajes de Interfaz", "clave": "SCC-1014", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "hardware", "prerequisitos": ["Arquitectura de Computadoras"]}
+      ]
+    },
+    {
+      "numero": 7,
+      "total_materias": 5,
+      "creditos_semestre": 24,
+      "materias": [
+        {"nombre": "Lenguajes y Autómatas II", "clave": "SCD-1016", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "teoria_computacion", "prerequisitos": ["Lenguajes y Autómatas I"]},
+        {"nombre": "Conmutación y Enrutamiento en Redes de Datos", "clave": "SCD-1004", "horas_teoria": 2, "horas_practica": 3, "creditos": 5, "area": "redes", "prerequisitos": ["Redes de Computadoras"]},
+        {"nombre": "Taller de Investigación I", "clave": "ACA-0909", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "investigacion", "prerequisitos": ["Fundamentos de Investigación"]},
+        {"nombre": "Gestión de Proyectos de Software", "clave": "SCG-1009", "horas_teoria": 3, "horas_practica": 3, "creditos": 6, "area": "ingenieria_software", "prerequisitos": ["Ingeniería de Software"]},
+        {"nombre": "Sistemas Programables", "clave": "SCC-1023", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "hardware", "prerequisitos": ["Lenguajes de Interfaz"]}
+      ]
+    },
+    {
+      "numero": 8,
+      "total_materias": 4,
+      "creditos_semestre": 17,
+      "materias": [
+        {"nombre": "Programación Lógica y Funcional", "clave": "SCC-1019", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "programacion", "prerequisitos": ["Lenguajes y Autómatas II"]},
+        {"nombre": "Administración de Redes", "clave": "SCA-1002", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "redes", "prerequisitos": ["Conmutación y Enrutamiento en Redes de Datos"]},
+        {"nombre": "Taller de Investigación II", "clave": "ACA-0910", "horas_teoria": 0, "horas_practica": 4, "creditos": 4, "area": "investigacion", "prerequisitos": ["Taller de Investigación I"]},
+        {"nombre": "Programación Web", "clave": "AEB-1055", "horas_teoria": 1, "horas_practica": 4, "creditos": 5, "area": "programacion", "prerequisitos": ["Fundamentos de Ingeniería de Software"]}
+      ]
+    },
+    {
+      "numero": 9,
+      "total_materias": 1,
+      "creditos_semestre": 4,
+      "materias": [
+        {"nombre": "Inteligencia Artificial", "clave": "SCC-1012", "horas_teoria": 2, "horas_practica": 2, "creditos": 4, "area": "inteligencia_artificial", "prerequisitos": ["Programación Lógica y Funcional", "Lenguajes y Autómatas II"]}
+      ]
+    }
+  ],
+  "actividades_integrales": [
+    {"nombre": "Residencia Profesional", "creditos": 10, "requisito": "Haber acreditado el 80% de los créditos del plan de estudios", "semestre_recomendado": "9", "descripcion": "Estancia en una empresa del sector productivo donde el alumno aplica sus conocimientos en un proyecto real. Dura mínimo 4 meses y máximo 1 año. Se evalúa mediante informe escrito y presentación oral."},
+    {"nombre": "Servicio Social", "creditos": 10, "requisito": "Haber acreditado el 60% de los créditos del plan de estudios", "semestre_recomendado": "7-8", "descripcion": "Actividad obligatoria de 480 horas que realiza el alumno en beneficio de la sociedad. Puede realizarse en instituciones públicas, privadas o en la misma escuela. Requiere carta de aceptación del organismo receptor, informe final avalado por el responsable, y constancia de liberación."},
+    {"nombre": "Actividades Complementarias", "creditos": 5, "requisito": "Ninguno específico, puede realizarse a lo largo de la carrera", "semestre_recomendado": "1-8", "descripcion": "Actividades extracurriculares que suman créditos complementarios. Incluyen: conferencias, talleres, cursos de idioma, participación en concursos, certificaciones, visitas industriales, entre otras. Se acreditan con constancias emitidas por la coordinación de carrera."},
+    {"nombre": "Especialidad", "creditos": 25, "requisito": "Haber acreditado el 70% de los créditos del plan de estudios", "semestre_recomendado": "8-9", "descripcion": "Formación especializada de 25 créditos que se cursa en los últimos semestres. Las especialidades disponibles son: (1) Desarrollo de Aplicaciones Avanzadas y (2) Redes Empresariales, Seguridad y Automatización. Cada especialidad tiene su propio plan de estudios con materias optativas y un proyecto integrador."}
+  ],
+  "recomendaciones_plan": {
+    "descripcion": "Estrategias sugeridas para completar la carrera de forma eficiente y sin sobrecarga académica.",
+    "reglas_generales": [
+      "No inscribir más de 6 materias por semestre si varias son de matemáticas avanzadas (Cálculo, Ecuaciones Diferenciales, etc.)",
+      "Distribuir las materias de programación pesadas (Estructura de Datos, Tópicos Avanzados) en semestres separados de matemáticas difíciles",
+      "Iniciar las Actividades Complementarias desde el primer semestre para acumular créditos sin presión",
+      "Planificar el Servicio Social para el semestre 7, junto con materias teóricas de menor carga práctica",
+      "Dejar la Residencia Profesional para el último semestre, preferentemente con solo 1 o 2 materias",
+      "Tomar la Especialidad en paralelo con el último semestre de materias o después de concluir la carga académica",
+      "Priorizar los talleres (0 horas teoría, 4 prácticas) cuando se llevan otras materias pesadas, ya que su carga teórica es menor"
+    ],
+    "semestre_recomendado_carga": [
+      {"semestre": 1, "estilo": "Suave", "consejo": "6 materias, 27 créditos. Semestre de adaptación. Enfócate en Fundamentos de Programación y Cálculo Diferencial."},
+      {"semestre": 2, "estilo": "Moderado", "consejo": "6 materias, 28 créditos. Añade POO y Álgebra Lineal. Mantiene buen ritmo sin sobrecarga."},
+      {"semestre": 3, "estilo": "Moderado", "consejo": "6 materias, 28 créditos. Cálculo Vectorial + Estructura de Datos. Empieza a ponerse interesante."},
+      {"semestre": 4, "estilo": "Pesado", "consejo": "6 materias, 29 créditos. Ecuaciones Diferenciales + Tópicos Avanzados + Fundamentos de BD. El semestre más cargado del plan base."},
+      {"semestre": 5, "estilo": "Suave", "consejo": "6 materias, 25 créditos. Materias más aplicadas y menos teóricas. Buen momento para recuperar ritmo."},
+      {"semestre": 6, "estilo": "Moderado-Pesado", "consejo": "6 materias, 28 créditos. Redes + Sistemas Operativos + Bases de Datos. Mucha carga práctica."},
+      {"semestre": 7, "estilo": "Moderado", "consejo": "5 materias + Servicio Social, 24 créditos académicos + 10 de SS. Ideal para liberar SS y avanzar en la carrera."},
+      {"semestre": 8, "estilo": "Suave", "consejo": "4 materias + posible Especialidad, 17 créditos académicos. Preparar Residencia Profesional."},
+      {"semestre": 9, "estilo": "Ligero", "consejo": "1 materia (IA) + Residencia Profesional + Especialidad. Solo 4 créditos académicos. Enfócate 100% en la residencia."}
+    ],
+    "mejor_plan_completo": "El plan óptimo es seguir el orden sugerido por la retícula sin saltar semestres. Los semestres 4 y 6 son los más exigentes, por lo que es recomendable no cargar trabajo extra ni materias optativas en ellos. Se sugiere liberar Actividades Complementarias desde el semestre 1 al 6, Servicio Social en el 7, y Residencia Profesional en el 9. La Especialidad puede distribuirse entre los semestres 8 y 9. Con esta estrategia, la carrera se completa en 9 semestres (4.5 años) sin necesidad de semestre adicional."
+  },
+  "objetivos_carrera": {
+    "objetivo_general": "Formar profesionistas líderes con visión estratégica y amplio sentido ético; capaces de diseñar, desarrollar, implementar y administrar tecnología computacional para aportar soluciones innovadoras en beneficio de la sociedad; en un contexto global, multidisciplinario y sostenible.",
+    "objetivos_educacionales": [
+      "OE 1: Diseñar, configurar y administrar redes computacionales aplicando altos estándares de calidad basados en modelos internacionales utilizados en el ámbito laboral a nivel global.",
+      "OE 2: Analizar, desarrollar, implementar y gestionar un software implementando herramientas tecnológicas para la resolución de una problemática a nivel empresarial del sector público y privado.",
+      "OE 3: Participar en las etapas del ciclo de vida de un proyecto utilizando tecnología para diseñar, implementar y coordinar tecnologías de la información en un ámbito interdisciplinario.",
+      "OE 4: Desenvolverse en un ecosistema de datos; analizando, diseñando, implementando bases de datos a fin de proveer soluciones al ámbito empresarial del sector público y privado.",
+      "OE 5: Realizar investigaciones aplicando metodologías, a fin de beneficiar el desarrollo cultural, científico y tecnológico en el ámbito de sistemas computacionales y disciplinas afines."
+    ],
+    "perfil_egreso": [
+      "Implementa aplicaciones computacionales para solucionar problemas de diversos contextos, integrando diferentes tecnologías, plataformas o dispositivos.",
+      "Diseña, desarrolla y aplica modelos computacionales para solucionar problemas, mediante la selección y uso de herramientas matemáticas.",
+      "Diseña e implementa interfaces para la automatización de sistemas de hardware y desarrollo del software asociado.",
+      "Coordina y participa en equipos multidisciplinarios para la aplicación de soluciones innovadoras en diferentes contextos.",
+      "Diseña, implementa y administra bases de datos optimizando los recursos disponibles, conforme a las normas vigentes de manejo y seguridad de la información.",
+      "Desarrolla y administra software para apoyar la productividad y competitividad de las organizaciones cumpliendo con estándares de calidad.",
+      "Evalúa tecnologías de hardware para soportar aplicaciones de manera efectiva.",
+      "Detecta áreas de oportunidad empleando una visión empresarial para crear proyectos aplicando las Tecnologías de la Información y Comunicación.",
+      "Diseña, configura y administra redes de computadoras para crear soluciones de conectividad en la organización, aplicando las normas y estándares vigentes."
+    ]
+  }
+}

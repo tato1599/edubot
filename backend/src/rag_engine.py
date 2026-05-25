@@ -48,6 +48,118 @@ class RAGEngine:
                         "fuente": "tramites"
                     })
         
+        # Retícula ISC (Ingeniería en Sistemas Computacionales)
+        reticula_path = os.path.join(self.data_dir, "reticula_isc.json")
+        if os.path.exists(reticula_path):
+            with open(reticula_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                carrera = data.get("carrera", {})
+                
+                # Documento general de la carrera
+                self.documents.append({
+                    "id": "isc_general",
+                    "categoria": "reticula_isc",
+                    "titulo": f"{carrera.get('nombre', 'ISC')} - {carrera.get('institucion', 'TecNM')}",
+                    "contenido": (
+                        f"Carrera: {carrera.get('nombre', '')}. "
+                        f"Plan: {carrera.get('clave_plan', '')}. "
+                        f"Total materias: {carrera.get('total_materias', '')}. "
+                        f"Créditos totales: {carrera.get('total_creditos_plan', '')}. "
+                        f"Estructura: {json.dumps(carrera.get('estructura_creditos', {}))}"
+                    ),
+                    "keywords": ["reticula", "isc", "sistemas computacionales", "plan estudios", "ITCJ", "TecNM"],
+                    "fuente": "reticula_isc"
+                })
+                
+                # Indexar materias por semestre
+                for sem in data.get("semestres", []):
+                    sem_num = sem.get("numero", 0)
+                    for mat in sem.get("materias", []):
+                        prereqs = ", ".join(mat.get("prerequisitos", [])) if mat.get("prerequisitos") else "Ninguno"
+                        contenido = (
+                            f"Materia: {mat['nombre']}. "
+                            f"Clave: {mat['clave']}. "
+                            f"Semestre: {sem_num}. "
+                            f"Horas teoría: {mat.get('horas_teoria', 0)}. "
+                            f"Horas práctica: {mat.get('horas_practica', 0)}. "
+                            f"Créditos: {mat.get('creditos', 0)}. "
+                            f"Área: {mat.get('area', '')}. "
+                            f"Prerequisitos: {prereqs}."
+                        )
+                        self.documents.append({
+                            "id": f"isc_mat_{mat['clave']}",
+                            "categoria": "reticula_isc",
+                            "titulo": f"ISC - {mat['nombre']} ({mat['clave']})",
+                            "contenido": contenido,
+                            "keywords": [mat['nombre'].lower(), mat['clave'].lower(), "semestre", f"semestre {sem_num}", mat.get('area', '').lower()],
+                            "fuente": "reticula_isc"
+                        })
+                    
+                    # Documento resumen por semestre
+                    nombres_mats = ", ".join([m['nombre'] for m in sem.get("materias", [])])
+                    self.documents.append({
+                        "id": f"isc_sem_{sem_num}",
+                        "categoria": "reticula_isc",
+                        "titulo": f"ISC - Semestre {sem_num}",
+                        "contenido": (
+                            f"Semestre {sem_num} de Ingeniería en Sistemas Computacionales. "
+                            f"Materias: {sem.get('total_materias', 0)}. "
+                            f"Créditos del semestre: {sem.get('creditos_semestre', 0)}. "
+                            f"Materias incluidas: {nombres_mats}."
+                        ),
+                        "keywords": [f"semestre {sem_num}", "materias", "plan", "isc", "sistemas computacionales"],
+                        "fuente": "reticula_isc"
+                    })
+                
+                # Indexar actividades integrales
+                for act in data.get("actividades_integrales", []):
+                    self.documents.append({
+                        "id": f"isc_act_{act['nombre'].replace(' ', '_').lower()}",
+                        "categoria": "reticula_isc",
+                        "titulo": f"ISC - {act['nombre']}",
+                        "contenido": (
+                            f"Actividad: {act['nombre']}. "
+                            f"Créditos: {act['creditos']}. "
+                            f"Requisito: {act['requisito']}. "
+                            f"Semestre recomendado: {act['semestre_recomendado']}. "
+                            f"Descripción: {act['descripcion']}"
+                        ),
+                        "keywords": [act['nombre'].lower(), "creditos", "requisitos", "semestre", "isc"],
+                        "fuente": "reticula_isc"
+                    })
+                
+                # Indexar recomendaciones de plan
+                recs = data.get("recomendaciones_plan", {})
+                if recs.get("reglas_generales"):
+                    self.documents.append({
+                        "id": "isc_recomendaciones",
+                        "categoria": "reticula_isc",
+                        "titulo": "ISC - Recomendaciones y mejor plan de estudios",
+                        "contenido": (
+                            f"Descripción: {recs.get('descripcion', '')}. "
+                            f"Reglas generales: {' | '.join(recs.get('reglas_generales', []))}. "
+                            f"Plan completo recomendado: {recs.get('mejor_plan_completo', '')}"
+                        ),
+                        "keywords": ["plan", "recomendaciones", "estrategia", "carga", "semestre", "isc"],
+                        "fuente": "reticula_isc"
+                    })
+                
+                # Indexar objetivos y perfil de egreso
+                obj = data.get("objetivos_carrera", {})
+                if obj.get("objetivo_general"):
+                    self.documents.append({
+                        "id": "isc_objetivos",
+                        "categoria": "reticula_isc",
+                        "titulo": "ISC - Objetivos y perfil de egreso",
+                        "contenido": (
+                            f"Objetivo general: {obj.get('objetivo_general', '')}. "
+                            f"Objetivos educacionales: {' | '.join(obj.get('objetivos_educacionales', []))}. "
+                            f"Perfil de egreso: {' | '.join(obj.get('perfil_egreso', []))}"
+                        ),
+                        "keywords": ["objetivos", "perfil egreso", "competencias", "isc", "egresado"],
+                        "fuente": "reticula_isc"
+                    })
+        
         # SMAE
         smae_path = os.path.join(self.data_dir, "smae.json")
         if os.path.exists(smae_path):

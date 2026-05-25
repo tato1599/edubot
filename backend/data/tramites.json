@@ -1,5 +1,5 @@
 {
-  "categorias": ["inscripcion", "reinscripcion", "constancias", "equivalencias", "becas", "titulacion"],
+  "categorias": ["inscripcion", "reinscripcion", "constancias", "equivalencias", "becas", "titulacion", "cambio_carrera", "servicio_social", "constancia_servicio_social"],
   "documentos": [
     {
       "id": "insc_01",
@@ -84,6 +84,34 @@
       "titulo": "Horarios de atención de Servicios Escolares",
       "contenido": "El departamento de Servicios Escolares atiende de lunes a viernes de 9:00 a 14:00 horas y de 16:00 a 19:00 horas. Los sábados atienden de 9:00 a 13:00 horas únicamente para pagos en caja y entrega de documentos simples. No se realizan trámites complejos los sábados. Durante periodo vacacional de verano (julio) y invierno (diciembre), el horario se reduce a 9:00 a 14:00 horas de lunes a viernes.",
       "keywords": ["horarios", "servicios escolares", "atencion", "caja"]
+    },
+    {
+      "id": "cambio_01",
+      "categoria": "cambio_carrera",
+      "titulo": "Trámite de cambio de carrera dentro del TecNM",
+      "contenido": "El cambio de carrera se solicita al inicio de cada semestre (enero o agosto). Requisitos: haber cursado al menos un semestre completo, promedio mínimo de 8.0, no tener adeudos académicos ni administrativos, y presentar solicitud dirigida al Director Académico. Se debe entregar: acta de calificaciones del semestre cursado, constancia de no adeudos, carta de motivos explicando el cambio, y aprobación del Coordinador de la carrera de origen y destino. Las materias aprobadas equivalentes se convalidan automáticamente. El trámite tiene un costo de $350 MXN y se resuelve en 15 días hábiles. No se permite cambio de carrera en el último año del plan de estudios.",
+      "keywords": ["cambio de carrera", "cambiar carrera", "cambio", "convalidacion", "carrera destino"]
+    },
+    {
+      "id": "ss_01",
+      "categoria": "servicio_social",
+      "titulo": "Trámite y requisitos del Servicio Social",
+      "contenido": "El Servicio Social es una actividad obligatoria de 480 horas que otorga 10 créditos. Requisito previo: haber acreditado el 60% de los créditos del plan de estudios (aproximadamente semestre 7). Pasos del trámite: (1) Acudir a Servicios Escolares y solicitar la carta de presentación, (2) Entregar la carta al organismo receptor (empresa, institución pública, o dependencia gubernamental), (3) El organismo firma el convenio de aceptación, (4) Realizar las 480 horas de servicio en un periodo mínimo de 6 meses y máximo de 2 años, (5) Entregar informe final avalado por el responsable del organismo, (6) Solicitar constancia de liberación en Servicios Escolares. No tiene costo. Los organismos aceptados incluyen: SEP, SHCP, CFE, SCT, Ayuntamiento, empresas del sector privado con convenio, y centros de asesoría del TecNM.",
+      "keywords": ["servicio social", "480 horas", "liberacion", "cartas", "organismo receptor", "requisitos"]
+    },
+    {
+      "id": "css_01",
+      "categoria": "constancia_servicio_social",
+      "titulo": "Constancia de liberación de Servicio Social",
+      "contenido": "La constancia de liberación de Servicio Social se expide en Servicios Escolares una vez que el alumno ha completado las 480 horas y entregado el informe final firmado por el organismo receptor. Requisitos: credencial vigente, original del informe final con sello y firma del responsable, copia del convenio de aceptación, y constancia de no adeudos. La constancia se entrega en 3 días hábiles. Es indispensable para tramitar la carta de pasante y posteriormente el título profesional. No tiene costo.",
+      "keywords": ["constancia servicio social", "liberacion servicio social", "informe final", "cartas"]
+    },
+    {
+      "id": "reticula_01",
+      "categoria": "reticula_isc",
+      "titulo": "Plan de estudios de Ingeniería en Sistemas Computacionales ISIC-2010-224",
+      "contenido": "La carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ (plan ISIC-2010-224) consta de 58 materias distribuidas en 9 semestres, más actividades integrales. Total de créditos: 260 (210 base + 25 especialidad + 10 residencia + 10 servicio social + 5 actividades complementarias). Materias por semestre: Sem 1 (6 materias, 27 créditos): Cálculo Diferencial, Fundamentos de Programación, Taller de Ética, Matemáticas Discretas, Taller de Administración, Fundamentos de Investigación. Sem 2 (6 materias, 28 créditos): Cálculo Integral, Programación Orientada a Objetos, Contabilidad Financiera, Química, Álgebra Lineal, Probabilidad y Estadística. Sem 3 (6 materias, 28 créditos): Cálculo Vectorial, Estructura de Datos, Cultura Empresarial, Investigación de Operaciones, Desarrollo Sustentable, Física General. Sem 4 (6 materias, 29 créditos): Ecuaciones Diferenciales, Métodos Numéricos, Tópicos Avanzados de Programación, Fundamentos de Base de Datos, Simulación, Principios Eléctricos y Aplicaciones Digitales. Sem 5 (6 materias, 25 créditos): Graficación, Fundamentos de Telecomunicaciones, Sistemas Operativos, Taller de Base de Datos, Fundamentos de Ingeniería de Software, Arquitectura de Computadoras. Sem 6 (6 materias, 28 créditos): Lenguajes y Autómatas I, Redes de Computadoras, Taller de Sistemas Operativos, Administración de Base de Datos, Ingeniería de Software, Lenguajes de Interfaz. Sem 7 (5 materias, 24 créditos): Lenguajes y Autómatas II, Conmutación y Enrutamiento en Redes de Datos, Taller de Investigación I, Gestión de Proyectos de Software, Sistemas Programables. Sem 8 (4 materias, 17 créditos): Programación Lógica y Funcional, Administración de Redes, Taller de Investigación II, Programación Web. Sem 9 (1 materia, 4 créditos): Inteligencia Artificial.",
+      "keywords": ["reticula", "plan estudios", "sistemas computacionales", "ISIC", "materias", "semestres", "creditos", "TecNM", "ITCJ"]
     }
   ]
 }
