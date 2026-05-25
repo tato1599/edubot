@@ -25,21 +25,6 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Estilos por defecto visibles para elementos animados por GSAP.
-   GSAP usa estilos inline que sobreescriben estos valores cuando funciona.
-   Si GSAP falla, estos estilos aseguran que los elementos sean visibles. */
-.logo-core,
-.logo-ring,
-.title-line,
-.title-sub,
-.welcome-desc,
-.feature-pills,
-.pill,
-.start-btn {
-    opacity: 1;
-    transform: none;
-}
-
 html, body {
     font-family: 'Outfit', sans-serif;
     background: var(--bg);

@@ -36,46 +36,42 @@ function initAnimations() {
     try {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         
-        tl.from('.logo-core', {
-            scale: 0,
-            rotation: 180,
-            duration: 1,
-            ease: 'back.out(1.7)'
-        })
-        .from('.logo-ring', {
-            scale: 0,
-            opacity: 0,
-            stagger: 0.15,
-            duration: 0.8
-        }, '-=0.6')
-        .from('.title-line', {
-            y: 40,
-            opacity: 0,
-            duration: 0.8
-        }, '-=0.4')
-        .from('.title-sub', {
-            y: 20,
-            opacity: 0,
-            duration: 0.6
-        }, '-=0.5')
-        .from('.welcome-desc', {
-            y: 20,
-            opacity: 0,
-            duration: 0.6
-        }, '-=0.4')
-        .from('.pill', {
-            scale: 0.8,
-            opacity: 0,
-            stagger: 0.1,
-            duration: 0.5,
-            ease: 'back.out(1.4)'
-        }, '-=0.3')
-        .from('.start-btn', {
-            y: 30,
-            opacity: 0,
-            duration: 0.7,
-            ease: 'back.out(1.2)'
-        }, '-=0.2');
+        // Usar fromTo() para garantizar estado final visible (opacity: 1)
+        // y evitar que los elementos queden atrapados en opacity: 0
+        tl.fromTo('.logo-core',
+            { scale: 0, rotation: 180 },
+            { scale: 1, rotation: 0, duration: 1, ease: 'back.out(1.7)' }
+        )
+        .fromTo('.logo-ring',
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, stagger: 0.15, duration: 0.8 },
+            '-=0.6'
+        )
+        .fromTo('.title-line',
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8 },
+            '-=0.4'
+        )
+        .fromTo('.title-sub',
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6 },
+            '-=0.5'
+        )
+        .fromTo('.welcome-desc',
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6 },
+            '-=0.4'
+        )
+        .fromTo('.pill',
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, stagger: 0.1, duration: 0.5, ease: 'back.out(1.4)' },
+            '-=0.3'
+        )
+        .fromTo('.start-btn',
+            { y: 30, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, ease: 'back.out(1.2)' },
+            '-=0.2'
+        );
     } catch (e) {
         console.warn('[EduBot] Error en animaciones:', e);
     }
