@@ -1,0 +1,89 @@
+{
+  "categorias": ["inscripcion", "reinscripcion", "constancias", "equivalencias", "becas", "titulacion"],
+  "documentos": [
+    {
+      "id": "insc_01",
+      "categoria": "inscripcion",
+      "titulo": "Proceso de inscripción para nuevo ingreso",
+      "contenido": "El proceso de inscripción para nuevo ingreso se realiza en dos periodos: enero y agosto. Los requisitos son: acta de nacimiento actualizada, CURP, certificado de bachillerato o preparatoria legalizado, 2 fotografías tamaño infantil blanco y negro, y comprobante de domicilio reciente. El costo de la inscripción es de $1,850 MXN para licenciaturas y $2,400 MXN para posgrados. El pago se realiza en la caja de la institución o por transferencia bancaria. Después del pago, se entrega la documentación en la Coordinación de Carrera. El proceso toma aproximadamente 3 días hábiles.",
+      "keywords": ["inscripcion", "nuevo ingreso", "requisitos", "documentos", "costo", "pago"]
+    },
+    {
+      "id": "insc_02",
+      "categoria": "inscripcion",
+      "titulo": "Inscripción para alumnos extranjeros",
+      "contenido": "Los alumnos extranjeros deben presentar adicionalmente: pasaporte vigente, visa de estudiante (FM3), y traducción oficial al español de sus documentos académicos. Es necesario agendar una cita previa con la Dirección de Internacionalización. El proceso puede tomar hasta 10 días hábiles. Se ofrece orientación en inglés y francés.",
+      "keywords": ["extranjeros", "internacional", "pasaporte", "visa", "estudiantes extranjeros"]
+    },
+    {
+      "id": "reinsc_01",
+      "categoria": "reinscripcion",
+      "titulo": "Proceso de reinscripción semestral",
+      "contenido": "La reinscripción se realiza únicamente en línea a través del portal del alumno. Las fechas son: del 15 al 30 de enero para el semestre de primavera, y del 1 al 15 de agosto para el semestre de otoño. El alumno debe no tener adeudos académicos ni administrativos. El pago se genera automáticamente y se puede realizar con tarjeta de crédito, débito o SPEI. Una vez realizado el pago, el sistema valida automáticamente la reinscripción. Es obligatorio seleccionar las materias dentro del periodo indicado; después no hay cambios de horario.",
+      "keywords": ["reinscripcion", "semestre", "portal", "pago", "materias", "fechas"]
+    },
+    {
+      "id": "reinsc_02",
+      "categoria": "reinscripcion",
+      "titulo": "Reinscripción con adeudos o baja temporal",
+      "contenido": "Si el alumno tiene adeudos, debe acudir a la caja para regularizar su situación antes del periodo de reinscripción. En caso de baja temporal, debe presentar una solicitud por escrito a la Coordinación de Carrera al menos 30 días antes del inicio de clases. La baja temporal tiene una vigencia máxima de 2 semestres. Para reincorporarse, se debe pagar una cuota de reactivación de $450 MXN.",
+      "keywords": ["adeudos", "baja temporal", "reactivacion", "reincorporacion"]
+    },
+    {
+      "id": "const_01",
+      "categoria": "constancias",
+      "titulo": "Solicitud de constancia de estudios",
+      "contenido": "La constancia de estudios se solicita en el módulo de Servicios Escolares. Requisitos: credencial de estudiante vigente, y el pago de $85 MXN en caja. La constancia se entrega en 24 horas hábiles. Para uso oficial (trámites de gobierno), se requiere solicitar la versión con sello y firma de la Secretaría Académica, la cual tiene un costo adicional de $50 MXN y toma 3 días hábiles.",
+      "keywords": ["constancia", "estudios", "servicios escolares", "sello", "firma"]
+    },
+    {
+      "id": "const_02",
+      "categoria": "constancias",
+      "titulo": "Carta de pasante y constancia de créditos",
+      "contenido": "La carta de pasante se expide automáticamente una vez que el alumno acredita el 100% de los créditos de la carrera y no tiene adeudos. La carta indica que el alumno está en proceso de titulación. La constancia de créditos detalla las materias cursadas, calificaciones y promedio general. Se solicita en Servicios Escolares y se entrega en 48 horas.",
+      "keywords": ["carta pasante", "creditos", "titulacion", "promedio"]
+    },
+    {
+      "id": "equiv_01",
+      "categoria": "equivalencias",
+      "titulo": "Trámite de equivalencia de materias",
+      "contenido": "Para solicitar equivalencia de materias provenientes de otra institución, el alumno debe entregar: certificado de estudios original, carta de no adeudo de la institución de origen, programa de estudios firmado por la autoridad académica de la institución anterior, y solicitud de equivalencia dirigida al Director Académico. La revisión la realiza el Comité Académico de la carrera en un periodo máximo de 20 días hábiles. Se aceptan equivalencias de hasta el 30% del plan de estudios total.",
+      "keywords": ["equivalencia", "materias", "revalidacion", "otra universidad", "transferencia"]
+    },
+    {
+      "id": "becas_01",
+      "categoria": "becas",
+      "titulo": "Becas por excelencia académica",
+      "contenido": "La beca por excelencia académica otorga un descuento del 50% en colegiatura. Requisitos: promedio mínimo de 9.0 en el semestre anterior, no haber reprobado ninguna materia, y pertenecer al 10% superior de la generación. La solicitud se presenta en enero y agosto de cada año. Se requiere carta de motivos y constancia de no adeudos. La beca se renueva automáticamente si se mantiene el promedio.",
+      "keywords": ["beca", "excelencia", "promedio", "descuento", "colegiatura"]
+    },
+    {
+      "id": "becas_02",
+      "categoria": "becas",
+      "titulo": "Beca de apoyo económico y trabajadores hijos",
+      "contenido": "La beca de apoyo económico cubre el 30% de la colegiatura para alumnos con recursos limitados. Se requiere presentar solicitud, INE del tutor, comprobante de ingresos de los últimos 3 meses, y constancia de situación fiscal. Los hijos de trabajadores de la institución tienen derecho a un descuento del 25% adicional, acumulable con otras becas hasta un máximo del 75% de descuento total.",
+      "keywords": ["apoyo economico", "recursos", "hijos trabajadores", "descuento"]
+    },
+    {
+      "id": "tit_01",
+      "categoria": "titulacion",
+      "titulo": "Opciones de titulación disponibles",
+      "contenido": "Las opciones de titulación son: 1) Tesis o trabajo de investigación, 2) Examen general de egreso (CENEVAL), 3) Proyecto de residencia profesional, 4) Examen por áreas de conocimiento, 5) Tesis con artículo publicado, y 6) Experiencia laboral documentada (solo para posgrados). Cada opción tiene requisitos específicos que se detallan en el Reglamento de Titulación. El alumno debe elegir su opción antes del sexto semestre (licenciatura) o tercer cuatrimestre (posgrado).",
+      "keywords": ["titulacion", "tesis", "ceneval", "residencia", "opciones"]
+    },
+    {
+      "id": "tit_02",
+      "categoria": "titulacion",
+      "titulo": "Trámite de cédula profesional electrónica",
+      "contenido": "Una vez titulado, el egresado puede tramitar su cédula profesional electrónica a través de la Secretaría de Educación Pública (SEP). La institución envía automáticamente los datos del alumno titulado a la SEP. El egresado debe ingresar a la plataforma de la SEP con su CURP, descargar su cédula en formato PDF, y posteriormente acudir a una oficina de Derechos Federales para recoger la credencial física. El trámite es gratuito.",
+      "keywords": ["cedula", "profesional", "sep", "electronica", "egresado"]
+    },
+    {
+      "id": "serv_01",
+      "categoria": "servicios_generales",
+      "titulo": "Horarios de atención de Servicios Escolares",
+      "contenido": "El departamento de Servicios Escolares atiende de lunes a viernes de 9:00 a 14:00 horas y de 16:00 a 19:00 horas. Los sábados atienden de 9:00 a 13:00 horas únicamente para pagos en caja y entrega de documentos simples. No se realizan trámites complejos los sábados. Durante periodo vacacional de verano (julio) y invierno (diciembre), el horario se reduce a 9:00 a 14:00 horas de lunes a viernes.",
+      "keywords": ["horarios", "servicios escolares", "atencion", "caja"]
+    }
+  ]
+}

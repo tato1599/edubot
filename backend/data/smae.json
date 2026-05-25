@@ -1,0 +1,259 @@
+{
+  "version": "SMAE 2024",
+  "descripcion": "Sistema de Alimentos Equivalentes para instituciones educativas. Contiene grupos de alimentos, porciones y equivalencias nutricionales.",
+  "grupos": [
+    {
+      "nombre": "Verduras",
+      "icono": "🥬",
+      "porcion_base": "1/2 taza o 1 taza cruda",
+      "calorias_porcion": 25,
+      "nutrientes_porcion": {
+        "proteinas": "2 g",
+        "lipidos": "0 g",
+        "carbohidratos": "4 g",
+        "fibra": "2.5 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Acelga", "porcion": "1/2 taza cocida o 1 taza cruda"},
+        {"nombre": "Brócoli", "porcion": "1/2 taza cocida o 1 taza cruda"},
+        {"nombre": "Calabacita", "porcion": "1/2 taza cocida o 1 taza cruda"},
+        {"nombre": "Chayote", "porcion": "1/2 taza cocido o 1 pieza mediana"},
+        {"nombre": "Col", "porcion": "1/2 taza cocida o 1 taza cruda"},
+        {"nombre": "Ejotes", "porcion": "1/2 taza cocidos"},
+        {"nombre": "Espárragos", "porcion": "6 piezas o 1/2 taza"},
+        {"nombre": "Espinaca", "porcion": "1/2 taza cocida o 1 taza cruda"},
+        {"nombre": "Jícama", "porcion": "1/2 taza o 1 rebanada gruesa"},
+        {"nombre": "Lechuga", "porcion": "1 taza picada o 1 1/2 taza hojas"},
+        {"nombre": "Nopal", "porcion": "1/2 taza cocido o 1 taza crudo"},
+        {"nombre": "Pepino", "porcion": "1 taza en rodajas"},
+        {"nombre": "Jitomate", "porcion": "1/2 taza o 1 pieza mediana"},
+        {"nombre": "Zanahoria", "porcion": "1/2 taza en rodajas o 1/4 taza puré"}
+      ],
+      "recomendaciones_escuela": "Se recomienda incluir verduras en todos los almuerzos escolares. Para primaria: mínimo 1 porción por comida. Para secundaria y preparatoria: 1-2 porciones. Se sugiere variedad de colores (verde, rojo, naranja) para asegurar diversidad de vitaminas y minerales."
+    },
+    {
+      "nombre": "Frutas",
+      "icono": "🍎",
+      "porcion_base": "1 pieza mediana, 1 taza picada o 1/2 taza jugo natural",
+      "calorias_porcion": 60,
+      "nutrientes_porcion": {
+        "proteinas": "0 g",
+        "lipidos": "0 g",
+        "carbohidratos": "15 g",
+        "fibra": "2 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Manzana", "porcion": "1 pieza mediana (150 g)"},
+        {"nombre": "Plátano", "porcion": "1/2 pieza mediana (80 g)"},
+        {"nombre": "Naranja", "porcion": "1 pieza mediana (130 g)"},
+        {"nombre": "Mandarina", "porcion": "2 piezas medianas (150 g)"},
+        {"nombre": "Uva", "porcion": "1 taza (150 g)"},
+        {"nombre": "Sandía", "porcion": "1 taza en cubos (170 g)"},
+        {"nombre": "Papaya", "porcion": "1 taza en cubos (140 g)"},
+        {"nombre": "Melón", "porcion": "1 taza en cubos (160 g)"},
+        {"nombre": "Piña", "porcion": "3/4 taza en cubos (130 g)"},
+        {"nombre": "Guayaba", "porcion": "3 piezas medianas (150 g)"},
+        {"nombre": "Fresa", "porcion": "1 taza (140 g)"},
+        {"nombre": "Mango", "porcion": "1/2 pieza mediana (100 g)"},
+        {"nombre": "Toronja", "porcion": "1 pieza mediana (170 g)"},
+        {"nombre": "Pera", "porcion": "1/2 pieza mediana (100 g)"}
+      ],
+      "recomendaciones_escuela": "Las frutas son ideales para el desayuno escolar y el refrigerio de media mañana. Evitar ofrecer jugos envasados con azúcar añadida. Preferir fruta completa sobre jugos para maximizar el aporte de fibra. Se recomiendan 2-3 porciones de fruta al día para estudiantes en edad escolar."
+    },
+    {
+      "nombre": "Cereales y tubérculos (con grasa)",
+      "icono": "🌽",
+      "porcion_base": "1 tortilla grande, 1 rebanada de pan, o 1/2 taza de cereal/arroz/pasta cocidos",
+      "calorias_porcion": 115,
+      "nutrientes_porcion": {
+        "proteinas": "2 g",
+        "lipidos": "3 g",
+        "carbohidratos": "20 g",
+        "fibra": "1.5 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Tortilla de maíz", "porcion": "1 pieza grande (35 g)"},
+        {"nombre": "Tortilla de harina", "porcion": "1 pieza mediana (30 g)"},
+        {"nombre": "Pan blanco", "porcion": "1 rebanada (30 g)"},
+        {"nombre": "Pan integral", "porcion": "1 rebanada (30 g)"},
+        {"nombre": "Arroz blanco cocido", "porcion": "1/2 taza (60 g)"},
+        {"nombre": "Arroz integral cocido", "porcion": "1/2 taza (60 g)"},
+        {"nombre": "Pasta cocida", "porcion": "1/2 taza (70 g)"},
+        {"nombre": "Papa cocida", "porcion": "1/2 taza (85 g) o 1 pieza mediana"},
+        {"nombre": "Elote desgranado", "porcion": "1/2 taza (80 g)"},
+        {"nombre": "Avena cocida", "porcion": "1/3 taza (80 g)"},
+        {"nombre": "Galleta salada", "porcion": "5 piezas (25 g)"},
+        {"nombre": "Galleta integral", "porcion": "3 piezas (25 g)"},
+        {"nombre": "Pan dulce (concha)", "porcion": "1/3 pieza mediana (30 g)"},
+        {"nombre": "Tamal", "porcion": "1/3 pieza (50 g)"}
+      ],
+      "recomendaciones_escuela": "Preferir cereales integrales (pan integral, arroz integral, pasta integral) sobre refinados. Limitar el consumo de pan dulce y tamales en la escuela a una vez por semana como máximo. Incluir siempre un cereal o tubérculo en el almuerzo para garantizar energía suficiente durante la jornada escolar."
+    },
+    {
+      "nombre": "Leguminosas",
+      "icono": "🫘",
+      "porcion_base": "1/2 taza cocida",
+      "calorias_porcion": 120,
+      "nutrientes_porcion": {
+        "proteinas": "8 g",
+        "lipidos": "1 g",
+        "carbohidratos": "20 g",
+        "fibra": "7 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Frijol cocido", "porcion": "1/2 taza (85 g)"},
+        {"nombre": "Lenteja cocida", "porcion": "1/2 taza (85 g)"},
+        {"nombre": "Garbanzo cocido", "porcion": "1/2 taza (90 g)"},
+        {"nombre": "Haba cocida", "porcion": "1/2 taza (85 g)"},
+        {"nombre": "Soya cocida", "porcion": "1/3 taza (60 g)"},
+        {"nombre": "Alubia cocida", "porcion": "1/2 taza (85 g)"},
+        {"nombre": "Champiñones cocidos", "porcion": "1 taza (140 g)"}
+      ],
+      "recomendaciones_escuela": "Las leguminosas son la principal fuente de proteína vegetal. Se recomienda incluirlas en el menú escolar al menos 3 veces por semana. Combinar con cereales (arroz con frijoles, pasta con lentejas) para obtener proteína completa de alta calidad. Son económicas y nutritivas."
+    },
+    {
+      "nombre": "Alimentos de origen animal",
+      "icono": "🍗",
+      "porcion_base": "30-40 g de carne, pollo o pescado; 1 huevo; o 1/2 taza de queso fresco",
+      "calorias_porcion": 75,
+      "nutrientes_porcion": {
+        "proteinas": "7 g",
+        "lipidos": "5 g",
+        "carbohidratos": "0 g",
+        "fibra": "0 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Pollo sin piel cocido", "porcion": "30 g (1/4 de pieza pequeña)"},
+        {"nombre": "Res magra cocida", "porcion": "30 g"},
+        {"nombre": "Pescado cocido", "porcion": "30 g"},
+        {"nombre": "Atún en agua", "porcion": "1/4 taza (40 g)"},
+        {"nombre": "Huevo", "porcion": "1 pieza mediana (50 g)"},
+        {"nombre": "Queso fresco", "porcion": "1/2 taza (40 g)"},
+        {"nombre": "Cotija o requesón", "porcion": "3 cucharadas (30 g)"},
+        {"nombre": "Jamón de pavo", "porcion": "2 rebanadas (40 g)"},
+        {"nombre": "Carnes frías bajas en grasa", "porcion": "2 rebanadas (40 g)"}
+      ],
+      "recomendaciones_escuela": "Incluir proteína animal en el almuerzo escolar diariamente. Preferir métodos de cocción saludables: al horno, a la plancha, hervido o al vapor. Evitar fritos y embutidos procesados altaods en sodio. El pollo sin piel y el pescado son las mejores opciones por su bajo contenido de grasa saturada."
+    },
+    {
+      "nombre": "Leche y sustitutos",
+      "icono": "🥛",
+      "porcion_base": "1 taza (240 ml)",
+      "calorias_porcion": 150,
+      "nutrientes_porcion": {
+        "proteinas": "9 g",
+        "lipidos": "8 g",
+        "carbohidratos": "12 g",
+        "calcio": "300 mg"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Leche entera", "porcion": "1 taza (240 ml)"},
+        {"nombre": "Leche light", "porcion": "1 taza (240 ml)"},
+        {"nombre": "Leche descremada", "porcion": "1 taza (240 ml)"},
+        {"nombre": "Yoghurt natural", "porcion": "3/4 taza (180 ml)"},
+        {"nombre": "Yoghurt bebible", "porcion": "1 taza (240 ml)"},
+        {"nombre": "Queso amarillo", "porcion": "1 rebanada (30 g)"},
+        {"nombre": "Queso manchego", "porcion": "1 rebanada (30 g)"},
+        {"nombre": "Flan casero", "porcion": "1/2 taza (100 g)"},
+        {"nombre": "Gelatina con leche", "porcion": "3/4 taza (180 ml)"}
+      ],
+      "recomendaciones_escuela": "Ofrecer leche o yoghurt en el desayuno escolar. Preferir leche descremada o light para reducir grasa saturada sin perder calcio. Evitar leches saborizadas con azúcares añadidos (chocolate, fresa) más de una vez por semana. El consumo de lácteos es crucial para el desarrollo óseo en edad escolar."
+    },
+    {
+      "nombre": "Aceites y grasas",
+      "icono": "🫒",
+      "porcion_base": "1 cucharadita (5 g) o 1 cucharada sopera (10 g)",
+      "calorias_porcion": 45,
+      "nutrientes_porcion": {
+        "proteinas": "0 g",
+        "lipidos": "5 g",
+        "carbohidratos": "0 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Aceite vegetal", "porcion": "1 cucharadita (5 g)"},
+        {"nombre": "Aceite de oliva", "porcion": "1 cucharadita (5 g)"},
+        {"nombre": "Aceite de canola", "porcion": "1 cucharadita (5 g)"},
+        {"nombre": "Mantequilla", "porcion": "1 cucharadita (5 g)"},
+        {"nombre": "Crema", "porcion": "1 cucharada sopera (10 g)"},
+        {"nombre": "Aguacate", "porcion": "1/4 pieza (40 g)"},
+        {"nombre": "Cacahuate", "porcion": "10 piezas (10 g)"},
+        {"nombre": "Semillas de calabaza", "porcion": "1 cucharada sopera (10 g)"},
+        {"nombre": "Mayonesa", "porcion": "1 cucharadita (5 g)"},
+        {"nombre": "Aderezo ranch light", "porcion": "2 cucharadas soperas (20 g)"}
+      ],
+      "recomendaciones_escuela": "Usar aceites vegetales no saturados (de oliva, canola, maíz, soya) en la preparación de alimentos escolares. Limitar el uso de mantequilla, manteca y grasas animales. El aguacate y las semillas son fuentes saludables de grasa; incluirlas en ensaladas o como complemento. Controlar la cantidad total de grasa en el menú."
+    },
+    {
+      "nombre": "Azúcares y dulces",
+      "icono": "🍬",
+      "porcion_base": "1 cucharada sopera (10 g) de azúcar, o 1 pieza pequeña de dulce",
+      "calorias_porcion": 40,
+      "nutrientes_porcion": {
+        "proteinas": "0 g",
+        "lipidos": "0 g",
+        "carbohidratos": "10 g"
+      },
+      "alimentos_equivalentes": [
+        {"nombre": "Azúcar blanca", "porcion": "1 cucharada sopera (10 g)"},
+        {"nombre": "Azúcar morena", "porcion": "1 cucharada sopera (10 g)"},
+        {"nombre": "Miel", "porcion": "1 cucharada sopera (10 g)"},
+        {"nombre": "Mermelada", "porcion": "1 cucharada sopera (15 g)"},
+        {"nombre": "Chocolate", "porcion": "1/3 pieza (10 g)"},
+        {"nombre": "Galleta dulce", "porcion": "2 piezas pequeñas (10 g)"},
+        {"nombre": "Refresco", "porcion": "1/2 taza (120 ml)"},
+        {"nombre": "Jugo de fruta con azúcar", "porcion": "1/2 taza (120 ml)"},
+        {"nombre": "Cajeta", "porcion": "1 cucharada sopera (15 g)"}
+      ],
+      "recomendaciones_escuela": "Los azúcares añadidos deben limitarse drásticamente en la escuela. No ofrecer refrescos ni jugos azucarados. Los postres deben ser naturales (fruta fresca, gelatina sin azúcar) y limitarse a una pequeña porción ocasional. No vender dulces, botanas saladas ni bebidas azucaradas en la cooperativa escolar."
+    }
+  ],
+  "menus_ejemplo": [
+    {
+      "nombre": "Menú escolar básico (primaria)",
+      "desayuno": [
+        "1 taza de leche descremada",
+        "1/2 taza de avena cocida",
+        "1/2 pieza de plátano"
+      ],
+      "almuerzo": [
+        "1/2 taza de arroz rojo (tomate)",
+        "1/2 taza de frijoles de la olla",
+        "30 g de pollo a la plancha",
+        "1/2 taza de verduras al vapor (brócoli, zanahoria)",
+        "1 taza de agua de fruta natural sin azúcar"
+      ],
+      "refrigerio": [
+        "1 pieza de manzana",
+        "3 piezas de galleta integral"
+      ]
+    },
+    {
+      "nombre": "Menú escolar básico (secundaria/preparatoria)",
+      "desayuno": [
+        "1 taza de yoghurt natural",
+        "1/2 taza de granola baja en azúcar",
+        "1/2 taza de fresas picadas"
+      ],
+      "almuerzo": [
+        "2 tortillas de maíz",
+        "1/2 taza de tinga de pollo",
+        "1/2 taza de nopales con jitomate y cebolla",
+        "1/4 de aguacate",
+        "1 taza de agua de jamaica sin azúcar"
+      ],
+      "refrigerio": [
+        "1 pieza de mandarina",
+        "1 rebanada de pan integral con 1 cucharada de mermelada sin azúcar añadida"
+      ]
+    }
+  ],
+  "recomendaciones_generales": [
+    "Incluir agua natural como bebida principal en todas las comidas escolares.",
+    "Ofrecer fruta completa en lugar de jugos para maximizar fibra.",
+    "Usar métodos de cocción saludables: al vapor, hervido, al horno o a la plancha.",
+    "Garantizar la higiene en la manipulación de alimentos (lavado de manos, desinfección de verduras).",
+    "Respetar las porciones del SMAE para evitar sobrealimentación o desnutrición.",
+    "Incluir variedad de colores en frutas y verduras para asegurar diversidad de nutrientes.",
+    "Evitar el uso de sal de mesa en exceso; preferir hierbas y especias para sazonar."
+  ]
+}

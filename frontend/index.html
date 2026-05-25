@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduBot - Agente Escolar Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Fondo animado -->
+    <div class="bg-mesh">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Pantalla de inicio -->
+    <section id="welcome-screen" class="screen welcome-screen">
+        <div class="welcome-content">
+            <div class="logo-container">
+                <div class="logo-ring ring-1"></div>
+                <div class="logo-ring ring-2"></div>
+                <div class="logo-ring ring-3"></div>
+                <div class="logo-core">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M12 9h.01"/>
+                        <path d="M8 22h8"/>
+                        <path d="M7 10l-3 2v2l3-2z"/>
+                        <path d="M17 10l3 2v2l-3-2z"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <h1 class="welcome-title">
+                <span class="title-line">EduBot</span>
+                <span class="title-sub">Agente Escolar Inteligente</span>
+            </h1>
+            
+            <p class="welcome-desc">
+                Tu asistente personal para trámites escolares y nutrición basada en SMAE. 
+                Información precisa, respuestas instantáneas.
+            </p>
+            
+            <div class="feature-pills">
+                <span class="pill">🎓 Trámites</span>
+                <span class="pill">🥗 Nutrición SMAE</span>
+                <span class="pill">🧠 IA Local</span>
+            </div>
+            
+            <button id="start-btn" class="start-btn">
+                <span>Iniciar conversación</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="particles" id="particles"></div>
+    </section>
+
+    <!-- Pantalla del chat -->
+    <section id="chat-screen" class="screen chat-screen hidden">
+        <header class="chat-header">
+            <div class="header-left">
+                <button id="back-btn" class="icon-btn" aria-label="Volver">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                </button>
+                <div class="agent-info">
+                    <div class="agent-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M12 9h.01"/>
+                            <path d="M8 22h8"/>
+                        </svg>
+                    </div>
+                    <div class="agent-meta">
+                        <h2>EduBot</h2>
+                        <span class="status">
+                            <span class="status-dot"></span>
+                            En línea • Modelo Local
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="badge-rag">RAG</span>
+            </div>
+        </header>
+
+        <main class="chat-messages" id="chat-messages">
+            <!-- Mensajes se inyectan por JS -->
+        </main>
+
+        <footer class="chat-input-area">
+            <div class="input-wrapper">
+                <textarea 
+                    id="message-input" 
+                    placeholder="Pregunta sobre trámites escolares o nutrición SMAE..."
+                    rows="1"
+                ></textarea>
+                <button id="send-btn" class="send-btn" aria-label="Enviar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="input-hint">Presiona Enter para enviar • Shift+Enter para nueva línea</p>
+        </footer>
+    </section>
+
+    <!-- Indicador de carga global -->
+    <div id="global-loader" class="global-loader hidden">
+        <div class="loader-ring"></div>
+        <span>Cargando modelo de IA local...</span>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
