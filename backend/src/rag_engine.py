@@ -214,56 +214,129 @@ class RAGEngine:
                         "fuente": "comedores"
                     })
         
-        # SMAE
+        # SMAE (Sistema Mexicano de Alimentos Equivalentes - completo)
         smae_path = os.path.join(self.data_dir, "smae.json")
         if os.path.exists(smae_path):
             with open(smae_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # Indexar grupos de alimentos
+                
+                # 1. Indexar grupos de alimentos (solo los más comunes por grupo)
                 for grupo in data.get("grupos", []):
+                    nombre_grupo = grupo.get("nombre", "")
+                    alimentos = grupo.get("alimentos", [])
+                    
+                    # Tomar los primeros 15 alimentos del grupo (más comunes)
+                    alimentos_destacados = alimentos[:15]
+                    
+                    alimentos_texto = []
+                    for a in alimentos_destacados:
+                        linea = (
+                            f"{a['nombre']}: {a['cantidad']} {a['unidad']} = "
+                            f"{a['energia_kcal']} kcal, "
+                            f"{a['proteina_g']}g proteína, "
+                            f"{a['lipidos_g']}g grasa, "
+                            f"{a['hidratos_carbono_g']}g carbohidratos"
+                        )
+                        alimentos_texto.append(linea)
+                    
                     contenido = (
-                        f"Grupo de alimentos: {grupo['nombre']}. "
-                        f"Porción base: {grupo['porcion_base']}. "
-                        f"Calorías por porción: {grupo['calorias_porcion']} kcal. "
-                        f"Nutrientes: {json.dumps(grupo.get('nutrientes_porcion', {}))}. "
-                        f"Recomendaciones escolares: {grupo.get('recomendaciones_escuela', '')}"
+                        f"Grupo SMAE: {nombre_grupo}. "
+                        f"Total de alimentos en este grupo: {len(alimentos)}. "
+                        f"Alimentos más comunes: {' | '.join(alimentos_texto)}."
                     )
+                    
                     self.documents.append({
-                        "id": f"smae_grupo_{grupo['nombre'].replace(' ', '_').lower()}",
+                        "id": f"smae_grupo_{nombre_grupo.replace(' ', '_').lower()}",
                         "categoria": "smae",
-                        "titulo": f"SMAE - {grupo['nombre']}",
+                        "titulo": f"SMAE - {nombre_grupo}",
                         "contenido": contenido,
-                        "keywords": [grupo['nombre'].lower()] + [a['nombre'].lower() for a in grupo.get('alimentos_equivalentes', [])[:5]],
+                        "keywords": [
+                            nombre_grupo.lower(), "smae", "alimentos", "nutricion",
+                            "porcion", "calorias", "proteina", "grupo alimenticio"
+                        ],
                         "fuente": "smae"
                     })
                 
-                # Indexar recomendaciones generales
-                for i, rec in enumerate(data.get("recomendaciones_generales", [])):
-                    self.documents.append({
-                        "id": f"smae_rec_{i}",
-                        "categoria": "smae",
-                        "titulo": "Recomendación nutricional escolar",
-                        "contenido": rec,
-                        "keywords": ["nutricion", "escuela", "recomendacion"],
-                        "fuente": "smae"
-                    })
+                # 2. Indexar recomendaciones de dieta estudiantil
+                dieta = data.get("recomendaciones_dieta_estudiantil", {})
                 
-                # Indexar menús de ejemplo
-                for menu in data.get("menus_ejemplo", []):
-                    contenido = (
-                        f"Menú: {menu['nombre']}. "
-                        f"Desayuno: {', '.join(menu.get('desayuno', []))}. "
-                        f"Almuerzo: {', '.join(menu.get('almuerzo', []))}. "
-                        f"Refrigerio: {', '.join(menu.get('refrigerio', []))}."
-                    )
-                    self.documents.append({
-                        "id": f"smae_menu_{menu['nombre'].replace(' ', '_').lower()}",
-                        "categoria": "smae",
-                        "titulo": menu["nombre"],
-                        "contenido": contenido,
-                        "keywords": ["menu", "desayuno", "almuerzo", "refrigerio"],
-                        "fuente": "smae"
-                    })
+                if dieta:
+                    # Principios generales
+                    principios = dieta.get("principios", [])
+                    if principios:
+                        self.documents.append({
+                            "id": "smae_dieta_principios",
+                            "categoria": "smae",
+                            "titulo": "SMAE - Principios de dieta saludable para estudiantes",
+                            "contenido": (
+                                f"Consejos prácticos para estudiantes universitarios con presupuesto limitado. "
+                                f"{' | '.join(principios)}"
+                            ),
+                            "keywords": ["dieta", "estudiante", "economico", "saludable", "consejos", "nutricion", "smae"],
+                            "fuente": "smae"
+                        })
+                    
+                    # Lista de compras económica
+                    compras = dieta.get("lista_compras_economica", [])
+                    if compras:
+                        self.documents.append({
+                            "id": "smae_dieta_compras",
+                            "categoria": "smae",
+                            "titulo": "SMAE - Lista de compras económica para estudiantes",
+                            "contenido": (
+                                f"Alimentos económicos y nutritivos recomendados para estudiantes universitarios: "
+                                f"{' | '.join(compras)}"
+                            ),
+                            "keywords": ["lista compras", "economico", "estudiante", "abarrotes", "mercado", "barato", "nutricion"],
+                            "fuente": "smae"
+                        })
+                    
+                    # Menús de ejemplo económicos
+                    for menu in dieta.get("menus_ejemplo_economicos", []):
+                        self.documents.append({
+                            "id": f"smae_menu_{menu['nombre'].replace(' ', '_').lower()}",
+                            "categoria": "smae",
+                            "titulo": f"SMAE - {menu['nombre']}",
+                            "contenido": (
+                                f"{menu['nombre']}. Costo estimado: {menu['costo_estimado']}. "
+                                f"Desayuno: {menu['desayuno']} "
+                                f"Comida: {menu['comida']} "
+                                f"Cena: {menu['cena']} "
+                                f"{menu.get('colacion', '')}"
+                            ),
+                            "keywords": ["menu", "economico", "estudiante", "desayuno", "comida", "cena", "dieta", "presupuesto"],
+                            "fuente": "smae"
+                        })
+                    
+                    # Snacks saludables y baratos
+                    snacks = dieta.get("snacks_saludables_baratos", [])
+                    if snacks:
+                        self.documents.append({
+                            "id": "smae_dieta_snacks",
+                            "categoria": "smae",
+                            "titulo": "SMAE - Snacks saludables y baratos para estudiantes",
+                            "contenido": (
+                                f"Opciones de snacks nutritivos y económicos para estudiantes universitarios: "
+                                f"{' | '.join(snacks)}"
+                            ),
+                            "keywords": ["snack", "botana", "saludable", "barato", "estudiante", "colacion", "nutricion"],
+                            "fuente": "smae"
+                        })
+                    
+                    # Alimentos a evitar
+                    evitar = dieta.get("alimentos_a_evitar_o_limitar", [])
+                    if evitar:
+                        self.documents.append({
+                            "id": "smae_dieta_evitar",
+                            "categoria": "smae",
+                            "titulo": "SMAE - Alimentos a evitar o limitar para estudiantes",
+                            "contenido": (
+                                f"Alimentos que los estudiantes deben evitar o consumir con moderación para mantener una dieta saludable: "
+                                f"{' | '.join(evitar)}"
+                            ),
+                            "keywords": ["evitar", "limitar", "saludable", "estudiante", "consejos", "nutricion", "advertencias"],
+                            "fuente": "smae"
+                        })
         
         print(f"[RAG] {len(self.documents)} documentos indexados.")
     

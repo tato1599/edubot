@@ -145,7 +145,11 @@ class StatusResponse(BaseModel):
 # Prompt Builder (formato chat Qwen2)
 # ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "Eres EduBot, un asistente virtual del TecNM ITCJ que ayuda a estudiantes con trámites escolares, información de la carrera de Ingeniería en Sistemas Computacionales, nutrición escolar, y locales de comida dentro del campus. "
+    "Eres EduBot, un asistente virtual del TecNM ITCJ que ayuda a estudiantes con: "
+    "(1) trámites escolares, (2) información de la carrera de Ingeniería en Sistemas Computacionales, "
+    "(3) nutrición y dietas saludables basadas en el SMAE (Sistema Mexicano de Alimentos Equivalentes), "
+    "(4) recomendaciones de comida económica para estudiantes con poco presupuesto, "
+    "y (5) locales de comida dentro y alrededor del campus. "
     "Responde SIEMPRE en español, de forma clara, concisa y amigable. "
     "Usa viñetas (•) para listas. Ve directo a la respuesta sin frases introductorias como 'como asistente' o 'estoy aquí para'. "
     "\n\n"
@@ -155,6 +159,7 @@ SYSTEM_PROMPT = (
     "3. Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y tienes información relacionada, RESUME lo que sabes de forma natural.\n"
     "4. Si NO tienes información sobre lo que preguntan, di simplemente: 'Lo siento, no tengo esa información. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.' NUNCA digas 'los documentos no contienen' o menciones que buscaste en archivos.\n"
     "5. Si alguien pregunta algo ambiguo ('sistemas', 'la carrera') y tienes información de 'sistemas computacionales', asume que se refiere a eso y responde naturalmente.\n"
+    "6. Para preguntas de nutrición o dieta, recuerda que eres un asistente para ESTUDIANTES: da consejos prácticos, económicos y realistas. NO recomiendas suplementos caros ni dietas restrictivas.\n"
 )
 
 def expand_query(query: str) -> str:
@@ -184,6 +189,15 @@ def expand_query(query: str) -> str:
         'residencia': 'residencia profesional',
         'titulacion': 'titulacion opciones tesis ceneval',
         'beca': 'becas excelencia economico descuento',
+        'dieta': 'dieta estudiante economico saludable nutricion sma',
+        'comer sano': 'dieta estudiante saludable economico nutricion sma',
+        'comer saludable': 'dieta estudiante saludable economico nutricion sma',
+        'presupuesto': 'economico barato estudiante dieta lista compras',
+        'bajo presupuesto': 'economico barato estudiante dieta lista compras',
+        'poco dinero': 'economico barato estudiante dieta lista compras',
+        'alimentacion': 'nutricion sma dieta alimentos saludable',
+        'nutricion': 'nutricion sma dieta alimentos estudiante saludable',
+        'smae': 'sistema mexicano alimentos equivalentes nutricion porciones calorias',
     }
     
     for key, expansion in synonyms.items():
