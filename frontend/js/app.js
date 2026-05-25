@@ -3,7 +3,11 @@
  * Maneja animaciones, navegación y comunicación con la API FastAPI
  */
 
-const API_BASE = 'http://localhost:8000';
+// Si el frontend se sirve desde el mismo dominio que el backend (ej. FastAPI sirviendo estáticos),
+// usamos URL relativa. Si se abre directamente desde archivo (file://), usamos localhost.
+const API_BASE = (window.location.protocol === 'file:') 
+    ? 'http://localhost:8000' 
+    : `${window.location.protocol}//${window.location.host}`;
 
 // ── Referencias DOM ──
 const welcomeScreen = document.getElementById('welcome-screen');

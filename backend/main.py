@@ -8,6 +8,8 @@ import sys
 import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from contextlib import asynccontextmanager
@@ -99,6 +101,19 @@ app = FastAPI(
     version="1.1.0",
     lifespan=lifespan
 )
+
+# ──────────────────────────────────────────────────────────────
+# Servir frontend estático
+# ──────────────────────────────────────────────────────────────
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
+FRONTEND_DIR = os.path.abspath(FRONTEND_DIR)
+
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+@app.get("/", include_in_schema=False)
+async def serve_index():
+    """Sirve el frontend cuando se accede a la raíz."""
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 app.add_middleware(
     CORSMiddleware,

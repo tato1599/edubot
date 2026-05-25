@@ -164,6 +164,55 @@ Luego visita: [http://localhost:3000](http://localhost:3000)
 
 ---
 
+## 🌐 Compartir con compañeros (túnel público)
+
+Para que tus compañeros vean el proyecto desde su celular o computadora, necesitas exponerlo a Internet. EduBot ahora puede servirse todo desde un solo puerto (frontend + backend juntos).
+
+### Opción rápida: LocalTunnel (con npx)
+
+```bash
+# Desde la carpeta del proyecto
+./expose.sh
+```
+
+Esto hace lo siguiente:
+1. Inicia el backend en `localhost:8000`
+2. Crea un túnel público gratuito con `localtunnel`
+3. Te da una URL tipo `https://nombre-aleatorio.loca.lt`
+4. **Copia esa URL y pásala a tus compañeros**
+
+**Requisito:** tener `npx` instalado (viene con Node.js). Si no lo tienes:
+```bash
+# Instalar Node.js (incluye npx)
+sudo apt update && sudo apt install -y nodejs npm
+```
+
+### Opción estable: Cloudflare Tunnel
+
+```bash
+./expose-cloudflare.sh
+```
+
+**Requisito:** instalar `cloudflared` primero:
+```bash
+# Linux (Debian/Ubuntu)
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+```
+
+Ventajas de Cloudflare:
+- ✅ Más estable que localtunnel
+- ✅ No caduca tan rápido
+- ✅ Funciona sin crear cuenta
+
+### ¿Qué verán tus compañeros?
+
+Al abrir la URL, verán directamente la pantalla de bienvenida de EduBot con el botón **"Iniciar conversación"**. El chat funcionará completamente porque el backend y el frontend van juntos por el mismo túnel.
+
+> ⚠️ **Importante:** mantén la terminal abierta mientras quieras que esté disponible. Presiona `Ctrl+C` para cerrar.
+
+---
+
 ## 🏗️ Arquitectura técnica
 
 ```
