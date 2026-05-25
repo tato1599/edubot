@@ -974,25 +974,6 @@ async function sendToAPI(message) {
                         scrollToBottom();
                     }
                     else if (data.type === 'done') {
-                        // Agregar fuentes al final
-                        if (messageElement && currentSources.length > 0) {
-                            const pillsDiv = document.createElement('div');
-                            pillsDiv.style.marginTop = '0.5rem';
-                            pillsDiv.style.display = 'flex';
-                            pillsDiv.style.flexWrap = 'wrap';
-                            pillsDiv.style.gap = '0.4rem';
-                            
-                            currentSources.forEach(src => {
-                                const pill = document.createElement('span');
-                                pill.className = 'source-pill';
-                                pill.innerHTML = `📄 ${src.titulo} <span style="opacity:0.6">• ${src.categoria}</span>`;
-                                pillsDiv.appendChild(pill);
-                            });
-                            
-                            const content = messageElement.querySelector('.message-content');
-                            if (content) content.appendChild(pillsDiv);
-                        }
-                        
                         // Guardar respuesta completa del bot en el historial
                         if (currentMessage) {
                             conversationHistory.push({ role: "assistant", content: currentMessage });
