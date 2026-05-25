@@ -64,35 +64,51 @@
     },
     {
       "id": "comedor_02",
-      "nombre": "Cafetería del TecNM ITCJ",
+      "nombre": "Café Tec",
       "ubicacion": "Dentro de las instalaciones del TecNM ITCJ",
-      "tipo": "Comida corrida / Desayunos",
+      "tipo": "Cafetería / Comida corrida / Desayunos",
       "menu": [],
-      "nota": "Menú no disponible en la base de datos. Ofrece comida corrida, desayunos y snacks."
+      "nota": "Menú no disponible en la base de datos. Ofrece comida corrida, desayunos, café y snacks."
     },
     {
       "id": "comedor_03",
-      "nombre": "Locales frente al gimnasio",
-      "ubicacion": "Frente al gimnasio del TecNM ITCJ",
-      "tipo": "Varios",
+      "nombre": "Manos Sucias",
+      "ubicacion": "Dentro del TecNM ITCJ",
+      "tipo": "Comida rápida",
       "menu": [],
-      "nota": "Existen dos locales de comida frente al gimnasio. Menús y nombres no disponibles en la base de datos."
+      "nota": "Local de comida rápida dentro del campus. Menú específico no disponible en la base de datos."
     },
     {
       "id": "comedor_04",
-      "nombre": "Ex-Manos Sucias",
-      "ubicacion": "Sustituido por otro local dentro del TecNM ITCJ",
-      "tipo": "Comida rápida (anteriormente)",
-      "estado": "Cerrado / Sustituido",
+      "nombre": "Coffee Shop",
+      "ubicacion": "Dentro del TecNM ITCJ",
+      "tipo": "Café / Snacks / Bebidas",
       "menu": [],
-      "nota": "Anteriormente conocido como 'Manos Sucias'. Ya no opera bajo ese nombre. Fue sustituido por otro local cuyo nombre no está disponible en la base de datos."
+      "nota": "Coffee Shop dentro del campus. Ofrece café, bebidas y snacks. Menú específico no disponible en la base de datos."
+    },
+    {
+      "id": "comedor_05",
+      "nombre": "Local frente al gimnasio (sin nombre específico)",
+      "ubicacion": "Frente al gimnasio del TecNM ITCJ",
+      "tipo": "Varios",
+      "menu": [],
+      "nota": "Local de comida frente al gimnasio. El nombre específico no está disponible en la base de datos."
+    },
+    {
+      "id": "comedor_06",
+      "nombre": "Local al lado del Coffee Shop (sin nombre específico)",
+      "ubicacion": "Al lado del Coffee Shop dentro del TecNM ITCJ",
+      "tipo": "Varios",
+      "menu": [],
+      "nota": "Local de comida ubicado al lado del Coffee Shop. El nombre específico no está disponible en la base de datos."
     }
   ],
   "recomendaciones_generales": [
     "Doña Pelos es una opción popular de comida rápida ubicada enfrente de la biblioteca. Ofrece burritos, hamburguesas, boneless, ensaladas y snacks.",
-    "La cafetería del TecNM ITCJ ofrece comida corrida y desayunos, aunque el menú específico no está documentado.",
-    "Frente al gimnasio hay dos locales de comida adicionales.",
-    "El local anteriormente conocido como 'Manos Sucias' ya no opera bajo ese nombre.",
+    "Café Tec es la cafetería oficial del TecNM ITCJ. Ofrece comida corrida, desayunos, café y snacks.",
+    "Manos Sucias es un local de comida rápida dentro del campus.",
+    "Coffee Shop ofrece café, bebidas y snacks dentro del campus.",
+    "Existen otros locales de comida cuyos nombres específicos no están documentados: uno frente al gimnasio y otro al lado del Coffee Shop.",
     "Para conocer precios actualizados y horarios de atención, se recomienda acudir directamente a cada local."
   ]
 }
