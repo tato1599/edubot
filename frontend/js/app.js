@@ -405,7 +405,16 @@ function setupParallax() {
 
 // ── Event Listeners ──
 function setupEventListeners() {
-    startBtn.addEventListener('click', goToChat);
+    startBtn.addEventListener('click', (e) => {
+        // Efecto visual de activación
+        startBtn.classList.add('clicked');
+        
+        // Pequeño delay para que se vea la animación del botón antes de la transición
+        setTimeout(() => {
+            goToChat();
+        }, 300);
+    });
+    
     backBtn.addEventListener('click', goToWelcome);
     
     sendBtn.addEventListener('click', handleSend);
@@ -424,69 +433,204 @@ function setupEventListeners() {
     });
 }
 
-// ── Navegación con transiciones épicas ──
+// ── 💥 EXPLOSIÓN ÉPICA AL INICIAR CONVERSACIÓN ──
 function goToChat() {
-    const switchToChat = () => {
+    if (typeof gsap === 'undefined') {
+        switchToChatSimple();
+        return;
+    }
+    
+    const welcomeContent = document.querySelector('.welcome-content');
+    const logoContainer = document.querySelector('.logo-container');
+    
+    // 1. CREAR EXPLOSIÓN DE PARTÍCULAS
+    createSupernovaExplosion();
+    
+    // 2. TIMELINE ÉPICO
+    const masterTl = gsap.timeline({
+        onComplete: switchToChat
+    });
+    
+    // Fase 1: Logo se carga con energía
+    masterTl.to('.logo-core', {
+        scale: 1.5,
+        rotation: 720,
+        duration: 0.8,
+        ease: 'power4.in'
+    })
+    // Fase 2: Anillos expanden explosivamente
+    .to('.logo-ring', {
+        scale: 3,
+        opacity: 0,
+        borderColor: 'rgba(220, 38, 38, 0.9)',
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power4.out'
+    }, '-=0.5')
+    // Fase 3: Título hace glitch masivo
+    .to('.title-line', {
+        scale: 1.2,
+        textShadow: '0 0 100px rgba(220, 38, 38, 0.8), 0 0 200px rgba(245, 158, 11, 0.4)',
+        duration: 0.3,
+        ease: 'power4.in'
+    }, '-=0.4')
+    // Fase 4: Shake de cámara (vibración intensa)
+    .to('.welcome-screen', {
+        x: '+=15',
+        duration: 0.05,
+        repeat: 5,
+        yoyo: true,
+        ease: 'none'
+    }, '-=0.2')
+    // Fase 5: Zoom out masivo con desvanecimiento
+    .to('.welcome-content', {
+        scale: 3,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power4.in'
+    })
+    // Fase 6: Fondo colapsa
+    .to('.bg-mesh', {
+        scale: 0,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.in'
+    }, '-=0.4')
+    // Fase 7: Flash blanco
+    .to('.flash-overlay', {
+        opacity: 1,
+        duration: 0.2,
+        ease: 'power2.out',
+        onStart: () => {
+            const flash = document.createElement('div');
+            flash.className = 'flash-overlay';
+            flash.style.cssText = 'position:fixed;inset:0;background:#fff;opacity:0;z-index:9999;pointer-events:none;';
+            document.body.appendChild(flash);
+        }
+    })
+    .to('.flash-overlay', {
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+        onComplete: () => {
+            const flash = document.querySelector('.flash-overlay');
+            if (flash) flash.remove();
+        }
+    });
+    
+    function switchToChat() {
         welcomeScreen.classList.add('hidden');
         chatScreen.classList.remove('hidden');
-        chatScreen.style.opacity = '1';
-        chatScreen.style.transform = 'none';
         
-        // Animación de entrada del chat
-        if (typeof gsap !== 'undefined') {
-            try {
-                gsap.fromTo('.chat-header', 
-                    { y: -50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
-                );
-                gsap.fromTo('.chat-input-area',
-                    { y: 50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: 'power3.out' }
-                );
-            } catch (e) {}
-        }
+        // Animación de entrada del chat con efecto de materialización
+        gsap.fromTo('.chat-screen', 
+            { opacity: 0, scale: 0.8 },
+            { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' }
+        );
         
-        // Mostrar mensaje de bienvenida del bot
+        gsap.fromTo('.chat-header', 
+            { y: -100, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.2 }
+        );
+        
+        gsap.fromTo('.chat-messages',
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5, delay: 0.4 }
+        );
+        
+        gsap.fromTo('.chat-input-area',
+            { y: 100, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.7, delay: 0.5, ease: 'power3.out' }
+        );
+        
+        // Mensaje de bienvenida con typing effect
         setTimeout(() => {
             addBotMessage(
-                "¡Hola! Soy EduBot, tu asistente del TecNM ITCJ.\n\n" +
-                "Puedo ayudarte con:\n" +
-                "• 🎓 Trámites escolares (inscripción, reinscripción, constancias, becas, titulación)\n" +
-                "• 📚 Retícula de Ingeniería en Sistemas Computacionales\n" +
-                "• 🍔 Locales de comida (Doña Pelos, Café Tec, Manos Sucias)\n" +
-                "• 🥗 Nutrición SMAE y dietas económicas para estudiantes\n" +
-                "• ⚖️ Reglamento de Estudiantes del TecNM (derechos, obligaciones, sanciones)\n\n" +
-                "¿En qué puedo ayudarte hoy?"
+                "¡SISTEMA ACTIVADO! Soy EduBot, tu asistente inteligente del TecNM ITCJ.\n\n" +
+                "Estoy listo para ayudarte con:\n" +
+                "• 🎓 Trámites escolares\n" +
+                "• 📚 Retícula ISC\n" +
+                "• 🍔 Locales de comida\n" +
+                "• 🥗 Nutrición SMAE\n" +
+                "• ⚖️ Reglamento TecNM\n\n" +
+                "¿En qué puedo asistirte, Padawan?"
             );
-        }, 400);
-    };
-
-    if (typeof gsap !== 'undefined') {
-        try {
-            // Animación de salida épica
-            const tl = gsap.timeline({
-                onComplete: switchToChat
-            });
-            
-            tl.to('.welcome-content > *', {
-                y: -30,
-                opacity: 0,
-                stagger: 0.05,
-                duration: 0.4,
-                ease: 'power2.in'
-            })
-            .to('.bg-mesh', {
-                scale: 1.2,
-                opacity: 0,
-                duration: 0.5,
-                ease: 'power2.in'
-            }, '-=0.3');
-            return;
-        } catch (e) {
-            console.warn('[EduBot] GSAP falló en transición:', e);
-        }
+        }, 800);
     }
-    switchToChat();
+}
+
+// ── 🌟 SUPERNOVA EXPLOSION ──
+function createSupernovaExplosion() {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const particleCount = 60;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: fixed;
+            width: ${Math.random() * 8 + 4}px;
+            height: ${Math.random() * 8 + 4}px;
+            background: ${Math.random() > 0.5 ? '#DC2626' : '#F59E0B'};
+            border-radius: 50%;
+            left: ${centerX}px;
+            top: ${centerY}px;
+            z-index: 9998;
+            pointer-events: none;
+            box-shadow: 0 0 20px currentColor;
+        `;
+        document.body.appendChild(particle);
+        
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.5;
+        const distance = 300 + Math.random() * 500;
+        
+        gsap.to(particle, {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+            scale: 0,
+            opacity: 0,
+            duration: 0.8 + Math.random() * 0.4,
+            ease: 'power4.out',
+            onComplete: () => particle.remove()
+        });
+    }
+    
+    // Anillo de choque (shockwave)
+    const shockwave = document.createElement('div');
+    shockwave.style.cssText = `
+        position: fixed;
+        width: 100px;
+        height: 100px;
+        border: 4px solid rgba(220, 38, 38, 0.8);
+        border-radius: 50%;
+        left: ${centerX - 50}px;
+        top: ${centerY - 50}px;
+        z-index: 9997;
+        pointer-events: none;
+        box-shadow: 0 0 60px rgba(220, 38, 38, 0.6), inset 0 0 60px rgba(220, 38, 38, 0.3);
+    `;
+    document.body.appendChild(shockwave);
+    
+    gsap.to(shockwave, {
+        scale: 15,
+        opacity: 0,
+        duration: 1,
+        ease: 'power4.out',
+        onComplete: () => shockwave.remove()
+    });
+}
+
+function switchToChatSimple() {
+    welcomeScreen.classList.add('hidden');
+    chatScreen.classList.remove('hidden');
+    chatScreen.style.opacity = '1';
+    
+    setTimeout(() => {
+        addBotMessage(
+            "¡Hola! Soy EduBot, tu asistente del TecNM ITCJ.\n\n" +
+            "¿En qué puedo ayudarte hoy?"
+        );
+    }, 300);
 }
 
 function goToWelcome() {
