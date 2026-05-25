@@ -160,6 +160,60 @@ class RAGEngine:
                         "fuente": "reticula_isc"
                     })
         
+        # Comedores y locales de comida del TecNM ITCJ
+        comedores_path = os.path.join(self.data_dir, "comedores.json")
+        if os.path.exists(comedores_path):
+            with open(comedores_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                
+                for lugar in data.get("lugares_comida", []):
+                    # Indexar cada local
+                    menu_items = []
+                    for item in lugar.get("menu", []):
+                        desc = item.get("descripcion", "")
+                        if item.get("opciones"):
+                            desc += f" Opciones: {', '.join(item['opciones'])}."
+                        if item.get("incluye"):
+                            desc += f" Incluye: {', '.join(item['incluye'])}."
+                        menu_items.append(f"{item['nombre']}: {desc}")
+                    
+                    contenido = (
+                        f"Lugar: {lugar['nombre']}. "
+                        f"Ubicación: {lugar.get('ubicacion', 'No especificada')}. "
+                        f"Tipo: {lugar.get('tipo', 'No especificado')}. "
+                    )
+                    if menu_items:
+                        contenido += f"Menú: {' | '.join(menu_items)}. "
+                    if lugar.get("nota"):
+                        contenido += f"Nota: {lugar['nota']}. "
+                    if lugar.get("estado"):
+                        contenido += f"Estado: {lugar['estado']}. "
+                    
+                    self.documents.append({
+                        "id": f"comedor_{lugar['id']}",
+                        "categoria": "comedores",
+                        "titulo": f"Comida - {lugar['nombre']}",
+                        "contenido": contenido,
+                        "keywords": [
+                            lugar['nombre'].lower(),
+                            "comida", "comer", "restaurante", "snack", "menú",
+                            "hamburguesa", "burrito", "boneless", "nachos", "ensalada",
+                            "tecnm", "itcj", "campus"
+                        ],
+                        "fuente": "comedores"
+                    })
+                
+                # Indexar recomendaciones generales
+                for i, rec in enumerate(data.get("recomendaciones_generales", [])):
+                    self.documents.append({
+                        "id": f"comedor_rec_{i}",
+                        "categoria": "comedores",
+                        "titulo": "Recomendaciones de comida en el TecNM ITCJ",
+                        "contenido": rec,
+                        "keywords": ["comida", "comer", "restaurante", "recomendación", "tecnm", "itcj"],
+                        "fuente": "comedores"
+                    })
+        
         # SMAE
         smae_path = os.path.join(self.data_dir, "smae.json")
         if os.path.exists(smae_path):

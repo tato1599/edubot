@@ -145,7 +145,7 @@ class StatusResponse(BaseModel):
 # Prompt Builder (formato chat Qwen2)
 # ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "Eres EduBot, un asistente virtual del TecNM ITCJ que ayuda a estudiantes con trámites escolares, información de la carrera de Ingeniería en Sistemas Computacionales, y nutrición escolar. "
+    "Eres EduBot, un asistente virtual del TecNM ITCJ que ayuda a estudiantes con trámites escolares, información de la carrera de Ingeniería en Sistemas Computacionales, nutrición escolar, y locales de comida dentro del campus. "
     "Responde SIEMPRE en español, de forma clara, concisa y amigable. "
     "Usa viñetas (•) para listas. Ve directo a la respuesta sin frases introductorias como 'como asistente' o 'estoy aquí para'. "
     "\n\n"

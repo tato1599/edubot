@@ -1,0 +1,98 @@
+{
+  "lugares_comida": [
+    {
+      "id": "comedor_01",
+      "nombre": "Doña Pelos",
+      "ubicacion": "Enfrente de la biblioteca del TecNM ITCJ",
+      "tipo": "Comida rápida / Snacks",
+      "menu": [
+        {
+          "nombre": "Sándwich de pechuga de pollo",
+          "descripcion": "Sándwich preparado con pechuga de pollo y pan integral.",
+          "categoria": "sándwich"
+        },
+        {
+          "nombre": "Ensalada de pollo",
+          "descripcion": "Ensalada preparada con pechuga de pollo.",
+          "opciones": ["Aderezo BBQ", "Aderezo Ranch", "Aderezo Chipotle", "Natural"],
+          "categoria": "ensalada"
+        },
+        {
+          "nombre": "Burrito de carne deshebrada en salsa verde",
+          "descripcion": "Burrito relleno de carne deshebrada bañada en salsa verde.",
+          "categoria": "burrito"
+        },
+        {
+          "nombre": "Burrito de carne deshebrada en salsa roja",
+          "descripcion": "Burrito relleno de carne deshebrada bañada en salsa roja.",
+          "categoria": "burrito"
+        },
+        {
+          "nombre": "Burrito de chicharrón prensado",
+          "descripcion": "Burrito preparado con chicharrón prensado, frijoles y carne deshebrada.",
+          "categoria": "burrito"
+        },
+        {
+          "nombre": "Combo de hamburguesa",
+          "descripcion": "Hamburguesa de carne de res con queso, lechuga y tomate. Incluye papas fritas y refresco de 600 ml.",
+          "incluye": ["Papas fritas", "Refresco de 600 ml"],
+          "categoria": "combo"
+        },
+        {
+          "nombre": "Boneless 250 g",
+          "descripcion": "250 gramos de boneless de pollo.",
+          "opciones": ["Salsa BBQ", "Salsa Buffalo"],
+          "categoria": "alitas / boneless"
+        },
+        {
+          "nombre": "Salchipapas",
+          "descripcion": "Orden de papas fritas con trozos de salchicha y queso.",
+          "categoria": "snack"
+        },
+        {
+          "nombre": "Nachos con carne",
+          "descripcion": "Nachos preparados con 250 gramos de carne.",
+          "categoria": "snack"
+        },
+        {
+          "nombre": "Hamburguesa chicken spicy",
+          "descripcion": "Hamburguesa con pechuga de pollo, queso y salsa a elegir.",
+          "opciones": ["Salsa Buffalo", "Salsa BBQ"],
+          "categoria": "hamburguesa"
+        }
+      ]
+    },
+    {
+      "id": "comedor_02",
+      "nombre": "Cafetería del TecNM ITCJ",
+      "ubicacion": "Dentro de las instalaciones del TecNM ITCJ",
+      "tipo": "Comida corrida / Desayunos",
+      "menu": [],
+      "nota": "Menú no disponible en la base de datos. Ofrece comida corrida, desayunos y snacks."
+    },
+    {
+      "id": "comedor_03",
+      "nombre": "Locales frente al gimnasio",
+      "ubicacion": "Frente al gimnasio del TecNM ITCJ",
+      "tipo": "Varios",
+      "menu": [],
+      "nota": "Existen dos locales de comida frente al gimnasio. Menús y nombres no disponibles en la base de datos."
+    },
+    {
+      "id": "comedor_04",
+      "nombre": "Ex-Manos Sucias",
+      "ubicacion": "Sustituido por otro local dentro del TecNM ITCJ",
+      "tipo": "Comida rápida (anteriormente)",
+      "estado": "Cerrado / Sustituido",
+      "menu": [],
+      "nota": "Anteriormente conocido como 'Manos Sucias'. Ya no opera bajo ese nombre. Fue sustituido por otro local cuyo nombre no está disponible en la base de datos."
+    }
+  ],
+  "recomendaciones_generales": [
+    "Doña Pelos es una opción popular de comida rápida ubicada enfrente de la biblioteca. Ofrece burritos, hamburguesas, boneless, ensaladas y snacks.",
+    "La cafetería del TecNM ITCJ ofrece comida corrida y desayunos, aunque el menú específico no está documentado.",
+    "Frente al gimnasio hay dos locales de comida adicionales.",
+    "El local anteriormente conocido como 'Manos Sucias' ya no opera bajo ese nombre.",
+    "Para conocer precios actualizados y horarios de atención, se recomienda acudir directamente a cada local."
+  ]
+}
