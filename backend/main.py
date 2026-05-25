@@ -37,30 +37,50 @@ rag_engine = None
 llm_model = None
 tokenizer = None
 
+# Estado de carga para /health (progreso real)
+startup_status = {
+    "stage": "initializing",   # initializing | rag | tokenizer | model | ready
+    "stage_name": "Iniciando...",
+    "progress": 0.0,           # 0.0 - 1.0
+    "model_loaded": False,
+    "rag_documents": 0,
+}
+
 # ──────────────────────────────────────────────────────────────
 # Lifespan: carga pesada al iniciar el servidor
 # ──────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global rag_engine, llm_model, tokenizer
+    global rag_engine, llm_model, tokenizer, startup_status
     
     print("\n" + "="*50)
     print("INICIANDO AGENTE ESCOLAR INTELIGENTE")
     print("="*50 + "\n")
     
-    # 1. Cargar RAG Engine
+    # 1. Cargar RAG Engine (~10% del tiempo total)
+    startup_status["stage"] = "rag"
+    startup_status["stage_name"] = "Indexando documentos..."
+    startup_status["progress"] = 0.05
     print("[1/3] Cargando motor de RAG...")
     rag_engine = RAGEngine()
     stats = rag_engine.get_stats()
+    startup_status["rag_documents"] = stats["total_documents"]
+    startup_status["progress"] = 0.15
     print(f"      Documentos: {stats['total_documents']}")
     print(f"      Motor: {stats['embedding_model']}")
     
-    # 2. Cargar modelo de lenguaje
+    # 2. Cargar modelo de lenguaje (~85% del tiempo total)
+    startup_status["stage"] = "tokenizer"
+    startup_status["stage_name"] = "Descargando tokenizador..."
+    startup_status["progress"] = 0.20
     print("\n[2/3] Cargando modelo de lenguaje local...")
     print(f"      Esto puede tomar unos minutos la primera vez.")
     
     try:
         tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
+        startup_status["stage"] = "model"
+        startup_status["stage_name"] = "Cargando modelo de IA (esto puede tardar)..."
+        startup_status["progress"] = 0.35
         
         if DEVICE == "cuda":
             llm_model = AutoModelForCausalLM.from_pretrained(
@@ -77,10 +97,17 @@ async def lifespan(app: FastAPI):
             )
             llm_model = llm_model.to(DEVICE)
         
+        startup_status["model_loaded"] = True
+        startup_status["progress"] = 1.0
+        startup_status["stage"] = "ready"
+        startup_status["stage_name"] = "Sistema listo"
         print("      Modelo cargado correctamente.")
     except Exception as e:
         print(f"      ERROR al cargar modelo: {e}")
         llm_model = None
+        startup_status["stage"] = "error"
+        startup_status["stage_name"] = f"Error: {e}"
+        startup_status["progress"] = 1.0
     
     print("\n[3/3] Servidor listo para recibir peticiones.")
     print("="*50 + "\n")
@@ -126,16 +153,19 @@ app.add_middleware(
 )
 
 # ──────────────────────────────────────────────────────────────
-# Health Check
+# Health Check (progreso real de carga)
 # ──────────────────────────────────────────────────────────────
 @app.get("/health")
 async def health_check():
-    """Verifica si el backend y el modelo están listos."""
+    """Devuelve el estado actual de carga con progreso real."""
     is_ready = llm_model is not None
     return {
         "status": "ready" if is_ready else "loading",
+        "stage": startup_status["stage"],
+        "stage_name": startup_status["stage_name"],
+        "progress": startup_status["progress"],
         "model_loaded": is_ready,
-        "rag_documents": rag_engine.get_stats()["total_documents"] if rag_engine else 0
+        "rag_documents": startup_status["rag_documents"],
     }
 
 # ──────────────────────────────────────────────────────────────

@@ -21,51 +21,83 @@ const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
 const globalLoader = document.getElementById('global-loader');
 const particlesContainer = document.getElementById('particles');
-const loadingScreen = document.getElementById('loading-screen');
+const systemStatus = document.getElementById('system-status');
+const statusText = systemStatus?.querySelector('.status-text');
+const statusProgressFill = systemStatus?.querySelector('.status-progress-fill');
+const chatLoadingOverlay = document.getElementById('chat-loading-overlay');
+const chatLoaderText = document.getElementById('chat-loader-text');
+const chatLoaderSub = document.getElementById('chat-loader-sub');
 
 let isWaiting = false;
-let conversationHistory = []; // Historial de mensajes para memoria del bot
+let conversationHistory = [];
+let backendReady = false;
+let healthCheckInterval = null;
 
-// ── Inicialización ──
+// ── Inicialización: mostrar UI inmediatamente, carga en segundo plano ──
 document.addEventListener('DOMContentLoaded', () => {
-    checkBackendReady().then(() => {
-        // Backend listo — ocultar loader
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => loadingScreen.remove(), 700);
-        }
-        initApp();
-    });
+    initApp();
+    startHealthPolling();
 });
 
-async function checkBackendReady() {
-    const maxAttempts = 60; // 60 x 2s = 120s máximo
-    const interval = 2000;
-    
-    for (let i = 0; i < maxAttempts; i++) {
+// Polling de /health en segundo plano (no bloquea la UI)
+async function startHealthPolling() {
+    const poll = async () => {
         try {
-            const res = await fetch(`${API_BASE}/health`, { 
+            const res = await fetch(`${API_BASE}/health`, {
                 method: 'GET',
-                signal: AbortSignal.timeout(3000)
+                signal: AbortSignal.timeout(5000)
             });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.status === 'ready') return true;
-                // Si aún cargando, seguir esperando
+            if (!res.ok) throw new Error('health not ok');
+            const data = await res.json();
+            updateSystemStatus(data);
+            
+            if (data.status === 'ready') {
+                backendReady = true;
+                if (healthCheckInterval) {
+                    clearInterval(healthCheckInterval);
+                    healthCheckInterval = null;
+                }
             }
         } catch (e) {
-            // Backend aún no responde, seguir intentando
+            // Backend aún no responde (ni siquiera arrancó)
+            updateSystemStatus({
+                status: 'loading',
+                stage: 'initializing',
+                stage_name: 'Iniciando servidor...',
+                progress: 0.0
+            });
         }
-        await new Promise(r => setTimeout(r, interval));
+    };
+    
+    // Primera llamada inmediata
+    await poll();
+    // Luego cada 2 segundos hasta que esté listo
+    if (!backendReady) {
+        healthCheckInterval = setInterval(poll, 2000);
     }
-    // Si agotamos intentos, mostrar mensaje pero permitir usar igual
-    const subtitle = document.querySelector('.loading-subtitle');
-    if (subtitle) subtitle.textContent = 'El sistema está tardando más de lo esperado...';
-    return false;
+}
+
+function updateSystemStatus(data) {
+    if (!systemStatus || !statusText || !statusProgressFill) return;
+    
+    // Actualizar texto
+    const stageName = data.stage_name || (data.status === 'ready' ? 'Sistema listo' : 'Cargando...');
+    statusText.textContent = stageName;
+    
+    // Actualizar barra de progreso real
+    const progress = Math.max(0, Math.min(1, data.progress || 0));
+    statusProgressFill.style.width = `${Math.round(progress * 100)}%`;
+    
+    // Actualizar clases de estado
+    systemStatus.classList.remove('ready', 'error');
+    if (data.status === 'ready') {
+        systemStatus.classList.add('ready');
+    } else if (data.stage === 'error') {
+        systemStatus.classList.add('error');
+    }
 }
 
 function initApp() {
-    // No iniciar cursor Sith en móvil (no hay mouse)
     if (!IS_MOBILE) {
         initSithCursor();
     }
@@ -455,6 +487,21 @@ function setupParallax() {
 // ── Event Listeners ──
 function setupEventListeners() {
     startBtn.addEventListener('click', (e) => {
+        if (!backendReady) {
+            // Mostrar overlay de carga dentro del chat mientras el modelo se inicializa
+            showChatLoadingOverlay();
+            // Escuchar cuando esté listo para hacer la transición automática
+            const checkReady = setInterval(() => {
+                if (backendReady) {
+                    clearInterval(checkReady);
+                    hideChatLoadingOverlay();
+                    startBtn.classList.add('clicked');
+                    setTimeout(() => goToChat(), 300);
+                }
+            }, 500);
+            return;
+        }
+        
         // Efecto visual de activación
         startBtn.classList.add('clicked');
         
@@ -673,6 +720,24 @@ function switchToChatSimple() {
             "¿En qué puedo ayudarte hoy?"
         );
     }, 300);
+}
+
+// ── ⏳ OVERLAY DE CARGA DENTRO DEL CHAT ──
+function showChatLoadingOverlay() {
+    if (!chatLoadingOverlay) return;
+    welcomeScreen.classList.add('hidden');
+    chatScreen.classList.remove('hidden');
+    chatLoadingOverlay.classList.remove('hidden');
+    
+    // Actualizar texto según el estado real
+    if (chatLoaderText && statusText) {
+        chatLoaderText.textContent = statusText.textContent;
+    }
+}
+
+function hideChatLoadingOverlay() {
+    if (!chatLoadingOverlay) return;
+    chatLoadingOverlay.classList.add('hidden');
 }
 
 // ── 🧹 LIMPIAR TODO ESTADO DE ANIMACIONES ──
