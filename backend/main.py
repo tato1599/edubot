@@ -6,12 +6,14 @@ Integra RAG + modelo local Qwen2-1.5B-Instruct para responder sobre trámites y 
 import os
 import sys
 import torch
+import asyncio
+import threading
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
 from contextlib import asynccontextmanager
 
 # Agregar src al path
@@ -301,6 +303,90 @@ async def chat(request: ChatRequest):
             "device": DEVICE,
             "context_length": len(prompt),
             "sources_found": len(sources)
+        }
+    )
+
+@app.post("/chat/stream")
+async def chat_stream(request: ChatRequest):
+    """
+    Endpoint de streaming que devuelve la respuesta token por token
+    usando Server-Sent Events (SSE).
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="Motor RAG no inicializado")
+    
+    if llm_model is None or tokenizer is None:
+        raise HTTPException(status_code=503, detail="Modelo de lenguaje no disponible")
+    
+    # 1. Expandir sinónimos y recuperar contexto
+    expanded_query = expand_query(request.message)
+    context = rag_engine.build_context(expanded_query, top_k=TOP_K_RETRIEVAL)
+    sources = rag_engine.search(expanded_query, top_k=TOP_K_RETRIEVAL)
+    
+    # 2. Construir prompt
+    messages = build_messages(request.message, context)
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True
+    )
+    
+    # 3. Preparar streamer
+    inputs = tokenizer(prompt, return_tensors="pt").to(llm_model.device)
+    streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
+    
+    # 4. Generar en thread separado
+    generation_kwargs = {
+        **inputs,
+        "streamer": streamer,
+        "max_new_tokens": 400,
+        "do_sample": True,
+        "temperature": 0.5,
+        "top_p": 0.9,
+        "top_k": 50,
+        "repetition_penalty": 1.1,
+        "pad_token_id": tokenizer.eos_token_id,
+        "eos_token_id": tokenizer.eos_token_id,
+    }
+    
+    thread = threading.Thread(target=lambda: llm_model.generate(**generation_kwargs))
+    thread.start()
+    
+    # 5. Formatear fuentes
+    formatted_sources = []
+    for s in sources:
+        formatted_sources.append({
+            "titulo": s["titulo"],
+            "categoria": s["categoria"],
+            "score": round(s.get("score", 0), 3)
+        })
+    
+    # 6. Generador SSE
+    async def generate_stream():
+        try:
+            # Enviar fuentes primero
+            import json
+            yield f"data: {json.dumps({'type': 'sources', 'sources': formatted_sources})}\n\n"
+            
+            # Enviar tokens a medida que se generan
+            for text in streamer:
+                if text:
+                    yield f"data: {json.dumps({'type': 'token', 'text': text})}\n\n"
+            
+            # Señal de fin
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            
+        except Exception as e:
+            import json
+            yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+    
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*",
         }
     )
 

@@ -689,10 +689,11 @@ function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// ── API Communication ──
+// ── API Communication (STREAMING) ──
 async function sendToAPI(message) {
     try {
-        const response = await fetch(`${API_BASE}/chat`, {
+        // Usar el endpoint de streaming
+        const response = await fetch(`${API_BASE}/chat/stream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: message, history: [] })
@@ -702,8 +703,97 @@ async function sendToAPI(message) {
             throw new Error(`HTTP ${response.status}`);
         }
         
-        const data = await response.json();
-        addBotMessage(data.response, data.sources);
+        // Leer el stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let currentMessage = '';
+        let currentSources = [];
+        let messageElement = null;
+        let contentElement = null;
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            buffer += decoder.decode(value, { stream: true });
+            
+            // Procesar eventos SSE (separados por \n\n)
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop(); // Mantener la última línea incompleta
+            
+            for (const line of lines) {
+                if (!line.trim() || !line.startsWith('data: ')) continue;
+                
+                try {
+                    const data = JSON.parse(line.slice(6));
+                    
+                    if (data.type === 'sources') {
+                        currentSources = data.sources || [];
+                    }
+                    else if (data.type === 'token') {
+                        // Primera vez: crear el elemento del mensaje
+                        if (!messageElement) {
+                            hideTyping();
+                            messageElement = createMessageElement('bot', '');
+                            chatMessages.appendChild(messageElement);
+                            contentElement = messageElement.querySelector('.message-content p');
+                            scrollToBottom();
+                            
+                            // Animar entrada
+                            gsap.fromTo(messageElement,
+                                { opacity: 0, y: 30, scale: 0.95 },
+                                { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out' }
+                            );
+                        }
+                        
+                        // Agregar texto
+                        currentMessage += data.text;
+                        if (contentElement) {
+                            contentElement.innerHTML = currentMessage
+                                .replace(/\n\n/g, '</p><p>')
+                                .replace(/\n/g, '<br>');
+                        }
+                        scrollToBottom();
+                    }
+                    else if (data.type === 'done') {
+                        // Agregar fuentes al final
+                        if (messageElement && currentSources.length > 0) {
+                            const pillsDiv = document.createElement('div');
+                            pillsDiv.style.marginTop = '0.5rem';
+                            pillsDiv.style.display = 'flex';
+                            pillsDiv.style.flexWrap = 'wrap';
+                            pillsDiv.style.gap = '0.4rem';
+                            
+                            currentSources.forEach(src => {
+                                const pill = document.createElement('span');
+                                pill.className = 'source-pill';
+                                pill.innerHTML = `📄 ${src.titulo} <span style="opacity:0.6">• ${src.categoria}</span>`;
+                                pillsDiv.appendChild(pill);
+                            });
+                            
+                            const content = messageElement.querySelector('.message-content');
+                            if (content) content.appendChild(pillsDiv);
+                        }
+                        
+                        isWaiting = false;
+                    }
+                    else if (data.type === 'error') {
+                        if (messageElement) {
+                            const content = messageElement.querySelector('.message-content p');
+                            if (content) content.innerHTML = `Error: ${data.message}`;
+                        } else {
+                            hideTyping();
+                            addBotMessage(`Error: ${data.message}`);
+                        }
+                        isWaiting = false;
+                    }
+                    
+                } catch (e) {
+                    console.warn('Error parsing SSE:', e);
+                }
+            }
+        }
         
     } catch (error) {
         console.error('Error:', error);
@@ -715,6 +805,7 @@ async function sendToAPI(message) {
             "2. La URL de la API es correcta: " + API_BASE + "\n\n" +
             "Error: " + error.message
         );
+        isWaiting = false;
     }
 }
 
