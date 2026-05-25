@@ -1,6 +1,6 @@
 """
 Backend FastAPI para el Agente Escolar Inteligente.
-Integra RAG + modelo local Qwen2-1.5B-Instruct para responder sobre trámites y nutrición.
+Integra RAG + modelo local Qwen2.5-7B-Instruct (4-bit) para responder sobre trámites y nutrición.
 """
 
 import os
@@ -13,7 +13,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer
+from transformers import (
+    AutoModelForCausalLM, AutoTokenizer, TextIteratorStreamer,
+    BitsAndBytesConfig
+)
 from contextlib import asynccontextmanager
 
 # Agregar src al path
@@ -23,12 +26,16 @@ from rag_engine import RAGEngine
 # ──────────────────────────────────────────────────────────────
 # Configuración
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-MODEL_NAME = "Qwen/Qwen2-1.5B-Instruct"
-TOP_K_RETRIEVAL = 5  # Más contexto = menos alucinaciones
+MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
+TOP_K_RETRIEVAL = 5
+TEMPERATURE = 0.2  # Baja: determinista, fiel al contexto
+MAX_NEW_TOKENS = 350
 
 print(f"[CONFIG] Dispositivo: {DEVICE}")
 print(f"[CONFIG] Modelo: {MODEL_NAME}")
+print(f"[CONFIG] Quantization: 4-bit (NF4)")
 print(f"[CONFIG] top_k retrieval: {TOP_K_RETRIEVAL}")
+print(f"[CONFIG] Temperature: {TEMPERATURE}")
 
 # ──────────────────────────────────────────────────────────────
 # Variables globales (se inicializan en lifespan)
@@ -79,29 +86,30 @@ async def lifespan(app: FastAPI):
     try:
         tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
         startup_status["stage"] = "model"
-        startup_status["stage_name"] = "Cargando modelo de IA (esto puede tardar)..."
+        startup_status["stage_name"] = "Cargando modelo de IA (descarga ~4GB, puede tardar)..."
         startup_status["progress"] = 0.35
         
-        if DEVICE == "cuda":
-            llm_model = AutoModelForCausalLM.from_pretrained(
-                MODEL_NAME,
-                dtype=torch.float16,
-                device_map="auto",
-                trust_remote_code=True
-            )
-        else:
-            llm_model = AutoModelForCausalLM.from_pretrained(
-                MODEL_NAME,
-                dtype=torch.float32,
-                trust_remote_code=True
-            )
-            llm_model = llm_model.to(DEVICE)
+        # Configuración 4-bit quantization para caber en 8GB VRAM
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+        )
+        
+        llm_model = AutoModelForCausalLM.from_pretrained(
+            MODEL_NAME,
+            quantization_config=bnb_config,
+            device_map="auto",
+            trust_remote_code=True,
+            low_cpu_mem_usage=True,
+        )
         
         startup_status["model_loaded"] = True
         startup_status["progress"] = 1.0
         startup_status["stage"] = "ready"
         startup_status["stage_name"] = "Sistema listo"
-        print("      Modelo cargado correctamente.")
+        print(f"      Modelo {MODEL_NAME} cargado correctamente en GPU (4-bit).")
     except Exception as e:
         print(f"      ERROR al cargar modelo: {e}")
         llm_model = None
@@ -190,27 +198,25 @@ class StatusResponse(BaseModel):
 # Prompt Builder (formato chat Qwen2)
 # ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "Eres EduBot, un asistente virtual del TecNM ITCJ. TU ÚNICO CONOCIMIENTO viene de la INFORMACIÓN QUE TIENES a continuación. "
-    "NO tienes acceso a internet. NO conoces eventos actuales. NO conoces datos de memoria. NO conoces la cultura pop, memes, chismes, deportes, política, ni nada fuera de tu contexto. "
-    "\n\n"
+    "Eres EduBot, un asistente virtual del TecNM ITCJ. Tu ÚNICA FUENTE DE INFORMACIÓN es el CONTEXTO DOCUMENTAL que se te proporciona a continuación. "
+    "NO tienes acceso a internet. NO conoces nada fuera de ese contexto. NO uses conocimiento previo.\n\n"
     "REGLAS ESTRICTAS:\n"
-    "1. RESPONDE ÚNICAMENTE usando la INFORMACIÓN QUE TIENES. Si algo NO está ahí, di: 'Lo siento, no tengo esa información.' NUNCA inventes.\n"
-    "2. Si te preguntan sobre el director del ITCJ, personajes, memes, cultura pop, deportes, noticias, o CUALQUIER tema fuera de trámites/retícula/SMAE/comida/reglamento, responde: 'Lo siento, no tengo esa información. Solo puedo ayudarte con trámites escolares, retícula ISC, nutrición SMAE, locales de comida y reglamento del TecNM.'\n"
-    "3. Si NO tienes información sobre lo que preguntan, di: 'Lo siento, no tengo esa información. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.' NUNCA digas 'los documentos no contienen', 'en mis archivos', 'según mis fuentes', ni menciones que buscaste información.\n"
-    "4. Ve directo a la respuesta. Sin frases introductorias como 'como asistente', 'estoy aquí para', 'basado en mi conocimiento'.\n"
-    "5. Responde SIEMPRE en español. Usa viñetas (•) para listas. Sé claro, conciso y amigable.\n"
+    "1. Usa ÚNICAMENTE la información del CONTEXTO DOCUMENTAL. Si algo NO está en el contexto, di EXACTAMENTE: 'Lo siento, no tengo esa información.' NUNCA inventes datos, números, nombres o hechos.\n"
+    "2. NUNCA inventes números. Si el contexto dice 9 semestres, di 9. Si dice 260 créditos, di 260. Si no sabes un número, di 'no tengo esa información'.\n"
+    "3. Si te preguntan sobre director del ITCJ, personajes, memes, cultura pop, deportes, noticias, o CUALQUIER tema fuera de trámites/retícula/SMAE/comida/reglamento, di: 'Lo siento, no tengo esa información. Solo puedo ayudarte con trámites escolares, retícula ISC, nutrición SMAE, locales de comida y reglamento del TecNM.'\n"
+    "4. NUNCA digas 'los documentos no contienen', 'en mis archivos', 'según mis fuentes', 'basado en mi conocimiento'. Ve directo a la respuesta.\n"
+    "5. Responde SIEMPRE en español. Sé claro, conciso y amigable.\n"
     "6. EASTER EGG SITH: Si el usuario menciona palabras como 'lado oscuro', 'sith', 'force', 'sable', 'darth', 'vader', 'padawan', 'maestro', 'jedi', 'imperio', 'rebelion', responde con humor mezclando Star Wars con el TecNM ITCJ, pero brevemente.\n"
-    "7. MEMORIA: Usa el historial de la conversación para seguimiento. Si el usuario dice 'y además', 'también', 'lo otro', infiere que se refiere al tema anterior.\n"
-    "\n"
+    "7. MEMORIA: Usa el historial de la conversación para seguimiento.\n\n"
     "EJEMPLOS DE RESPUESTAS CORRECTAS:\n"
-    "Usuario: ¿Cuál es la capital de Francia?\n"
-    "EduBot: Lo siento, no tengo esa información. Solo puedo ayudarte con trámites escolares, retícula ISC, nutrición SMAE, locales de comida y reglamento del TecNM.\n"
-    "\n"
-    "Usuario: ¿Quién es el director del Tec?\n"
-    "EduBot: Lo siento, no tengo esa información. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.\n"
-    "\n"
-    "Usuario: Cuéntame un meme\n"
-    "EduBot: Lo siento, no tengo esa información. Solo puedo ayudarte con trámites escolares, retícula ISC, nutrición SMAE, locales de comida y reglamento del TecNM.\n"
+    "P: ¿Cuántos semestres tiene ISC?\n"
+    "R: La carrera de Ingeniería en Sistemas Computacionales tiene 9 semestres. [SOLO si el contexto dice 9]\n"
+    "P: ¿Cuál es la capital de Francia?\n"
+    "R: Lo siento, no tengo esa información.\n"
+    "P: ¿Quién es el director?\n"
+    "R: Lo siento, no tengo esa información.\n"
+    "P: ¿Qué vende Doña Pelos?\n"
+    "R: [SOLO enumera lo que dice el contexto sobre Doña Pelos, nada más]\n"
 )
 
 def expand_query(query: str) -> str:
@@ -340,12 +346,12 @@ async def chat(request: ChatRequest):
         inputs = tokenizer(prompt, return_tensors="pt").to(llm_model.device)
         outputs = llm_model.generate(
             **inputs,
-            max_new_tokens=400,
+            max_new_tokens=MAX_NEW_TOKENS,
             do_sample=True,
-            temperature=0.3,              # Conservador: menos alucinaciones
+            temperature=TEMPERATURE,
             top_p=0.9,
             top_k=50,
-            repetition_penalty=1.1,
+            repetition_penalty=1.15,
             pad_token_id=tokenizer.eos_token_id,
             eos_token_id=tokenizer.eos_token_id
         )
@@ -409,12 +415,12 @@ async def chat_stream(request: ChatRequest):
     generation_kwargs = {
         **inputs,
         "streamer": streamer,
-        "max_new_tokens": 400,
-            "do_sample": True,
-            "temperature": 0.3,
+        "max_new_tokens": MAX_NEW_TOKENS,
+        "do_sample": True,
+        "temperature": TEMPERATURE,
         "top_p": 0.9,
         "top_k": 50,
-        "repetition_penalty": 1.1,
+        "repetition_penalty": 1.15,
         "pad_token_id": tokenizer.eos_token_id,
         "eos_token_id": tokenizer.eos_token_id,
     }
