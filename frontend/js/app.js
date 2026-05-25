@@ -95,6 +95,20 @@ function updateSystemStatus(data) {
     } else if (data.stage === 'error') {
         systemStatus.classList.add('error');
     }
+    
+    // Si el overlay de carga del chat está visible, actualizarlo también
+    if (chatLoaderText && !chatLoadingOverlay?.classList.contains('hidden')) {
+        chatLoaderText.textContent = stageName;
+    }
+    if (chatLoaderSub && !chatLoadingOverlay?.classList.contains('hidden')) {
+        if (data.status === 'ready') {
+            chatLoaderSub.textContent = '¡Listo! Redirigiendo...';
+        } else if (data.stage === 'model') {
+            chatLoaderSub.textContent = 'Descargando pesos del modelo (varios cientos de MB)...';
+        } else {
+            chatLoaderSub.textContent = 'Esto puede tomar unos minutos la primera vez';
+        }
+    }
 }
 
 function initApp() {
