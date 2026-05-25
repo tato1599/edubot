@@ -19,6 +19,7 @@ const globalLoader = document.getElementById('global-loader');
 const particlesContainer = document.getElementById('particles');
 
 let isWaiting = false;
+let conversationHistory = []; // Historial de mensajes para memoria del bot
 
 // ── Inicialización ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -496,6 +497,10 @@ function goToWelcome() {
         welcomeScreen.style.transform = 'none';
         chatMessages.innerHTML = '';
         
+        // Limpiar historial de conversación al salir del chat
+        conversationHistory = [];
+        updateMemoryIndicator();
+        
         // Re-iniciar animaciones de entrada
         if (typeof gsap !== 'undefined') {
             try {
@@ -523,21 +528,47 @@ function goToWelcome() {
     switchToWelcome();
 }
 
+// ── Actualizar indicador de memoria ──
+function updateMemoryIndicator() {
+    const indicator = document.getElementById('memory-indicator');
+    if (!indicator) return;
+    
+    const turnos = Math.floor(conversationHistory.length / 2);
+    if (turnos > 0) {
+        indicator.textContent = `${turnos} turno${turnos > 1 ? 's' : ''} en memoria`;
+        indicator.classList.add('active');
+    } else {
+        indicator.textContent = 'Memoria activa';
+        indicator.classList.remove('active');
+    }
+}
+
 // ── Chat Functions ──
 function handleSend() {
     const text = messageInput.value.trim();
     if (!text || isWaiting) return;
     
+    // Agregar mensaje del usuario al historial
+    conversationHistory.push({ role: "user", content: text });
+    updateMemoryIndicator();
+    
     addUserMessage(text);
     messageInput.value = '';
     messageInput.style.height = 'auto';
     
-    // Verificar easter eggs Sith primero
+    // Verificar easter eggs Sith primero (no usan API)
     const easterEgg = checkSithEasterEgg(text);
     if (easterEgg) {
         showTyping();
         setTimeout(() => {
             addBotMessage(easterEgg);
+            // Agregar respuesta del bot al historial
+            conversationHistory.push({ role: "assistant", content: easterEgg });
+            // Limitar historial a 10 mensajes (5 turnos)
+            if (conversationHistory.length > 10) {
+                conversationHistory = conversationHistory.slice(-10);
+            }
+            updateMemoryIndicator();
         }, 800 + Math.random() * 600);
         return;
     }
@@ -690,14 +721,14 @@ function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// ── API Communication (STREAMING) ──
+// ── API Communication (STREAMING con MEMORIA) ──
 async function sendToAPI(message) {
     try {
-        // Usar el endpoint de streaming
+        // Usar el endpoint de streaming, enviando historial de conversación
         const response = await fetch(`${API_BASE}/chat/stream`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message, history: [] })
+            body: JSON.stringify({ message: message, history: conversationHistory })
         });
         
         if (!response.ok) {
@@ -775,6 +806,16 @@ async function sendToAPI(message) {
                             
                             const content = messageElement.querySelector('.message-content');
                             if (content) content.appendChild(pillsDiv);
+                        }
+                        
+                        // Guardar respuesta completa del bot en el historial
+                        if (currentMessage) {
+                            conversationHistory.push({ role: "assistant", content: currentMessage });
+                            // Limitar historial a 10 mensajes (5 turnos) para no exceder tokens
+                            if (conversationHistory.length > 10) {
+                                conversationHistory = conversationHistory.slice(-10);
+                            }
+                            updateMemoryIndicator();
                         }
                         
                         isWaiting = false;

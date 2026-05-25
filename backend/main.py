@@ -164,6 +164,7 @@ SYSTEM_PROMPT = (
     "5. Si alguien pregunta algo ambiguo ('sistemas', 'la carrera') y tienes información de 'sistemas computacionales', asume que se refiere a eso y responde naturalmente.\n"
     "6. Para preguntas de nutrición o dieta, recuerda que eres un asistente para ESTUDIANTES: da consejos prácticos, económicos y realistas. NO recomiendas suplementos caros ni dietas restrictivas.\n"
     "7. EASTER EGG SITH: Si el usuario menciona palabras como 'lado oscuro', 'sith', 'force', 'sable', 'darth', 'vader', 'padawan', 'maestro', 'jedi', 'imperio', 'rebelion', responde con humor mezclando Star Wars con el TecNM ITCJ, pero brevemente.\n"
+    "8. MEMORIA: Puedes ver el historial de la conversación anterior. Usa ese contexto para responder preguntas de seguimiento o referirte a cosas que el usuario ya mencionó. Si el usuario dice 'y además', 'también', 'lo otro', o pregunta algo sin especificar de qué habla, infiere que se refiere al tema anterior.\n"
 )
 
 def expand_query(query: str) -> str:
@@ -219,23 +220,38 @@ def expand_query(query: str) -> str:
         return f"{query} {' '.join(expansions)}"
     return query
 
-def build_messages(query: str, context: str) -> list:
-    """Construye la lista de mensajes para apply_chat_template de Qwen2."""
+def build_messages(query: str, context: str, history: list = None) -> list:
+    """Construye la lista de mensajes para apply_chat_template de Qwen2.
+    Incluye historial de conversación si existe."""
+    
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT}
+    ]
+    
+    # Agregar historial de conversación (máximo últimos 6 mensajes = 3 turnos)
+    if history and len(history) > 0:
+        # Tomar solo los últimos mensajes para no exceder tokens
+        recent_history = history[-6:] if len(history) > 6 else history
+        for msg in recent_history:
+            if msg.get("role") in ["user", "assistant"] and msg.get("content"):
+                messages.append({
+                    "role": msg["role"],
+                    "content": msg["content"]
+                })
+    
+    # Agregar contexto RAG + pregunta actual
     user_content = (
         "INFORMACIÓN QUE TIENES:\n"
         "===================\n"
         f"{context}\n"
         "===================\n\n"
-        f"PREGUNTA: {query}\n\n"
-        "Responde como EduBot, el asistente escolar. Sé natural y directo. "
-        "Si la pregunta es general y tienes información relacionada, resume lo que sabes. "
-        "Si no sabes la respuesta, di que no tienes la información y sugiere acudir a Servicios Escolares. "
-        "NO digas 'los documentos no contienen' ni menciones que buscaste archivos."
+        f"PREGUNTA DEL USUARIO: {query}\n\n"
+        "Responde como EduBot. Si es una pregunta de seguimiento o referencia a algo anterior, usa el contexto de la conversación. "
+        "Sé natural, directo y conciso."
     )
-    return [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_content}
-    ]
+    
+    messages.append({"role": "user", "content": user_content})
+    return messages
 
 
 # ──────────────────────────────────────────────────────────────
@@ -265,8 +281,8 @@ async def chat(request: ChatRequest):
     context = rag_engine.build_context(expanded_query, top_k=TOP_K_RETRIEVAL)
     sources = rag_engine.search(expanded_query, top_k=TOP_K_RETRIEVAL)
     
-    # 2. Construir mensajes y aplicar chat template
-    messages = build_messages(request.message, context)
+    # 2. Construir mensajes y aplicar chat template (con historial)
+    messages = build_messages(request.message, context, request.history)
     prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
@@ -331,8 +347,8 @@ async def chat_stream(request: ChatRequest):
     context = rag_engine.build_context(expanded_query, top_k=TOP_K_RETRIEVAL)
     sources = rag_engine.search(expanded_query, top_k=TOP_K_RETRIEVAL)
     
-    # 2. Construir prompt
-    messages = build_messages(request.message, context)
+    # 2. Construir prompt con historial de conversación
+    messages = build_messages(request.message, context, request.history)
     prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
