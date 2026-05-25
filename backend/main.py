@@ -130,13 +130,19 @@ class StatusResponse(BaseModel):
 # Prompt Builder (formato chat Qwen2)
 # ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "Eres EduBot, un asistente virtual del TecNM ITCJ. "
-    "Tu ÚNICA fuente de información son los documentos que te proporciono en cada consulta. "
-    "NO uses conocimiento general de internet. NO inventes datos. NO supongas. "
-    "Si la respuesta NO está en los documentos, di EXACTAMENTE: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.' "
-    "Responde SIEMPRE en español. Sé conciso. Usa viñetas para listas. "
+    "Eres EduBot, un asistente virtual del TecNM ITCJ. Tu trabajo es responder preguntas basándote ÚNICAMENTE en los documentos que te proporciono. "
     "\n\n"
-    "EJEMPLO DE RESPUESTA CORRECTA:\n"
+    "REGLAS OBLIGATORIAS:\n"
+    "1. Responde SIEMPRE en español.\n"
+    "2. Usa ÚNICAMENTE la información de los documentos proporcionados.\n"
+    "3. NO uses conocimiento general de internet. NO inventes datos. NO supongas.\n"
+    "4. Si la pregunta es específica y la respuesta está en los documentos, responde con los datos exactos.\n"
+    "5. Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y hay documentos relacionados, RESUME la información de esos documentos.\n"
+    "6. Si NO hay documentos relacionados con la pregunta, di: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.'\n"
+    "7. Usa viñetas (•) para listas. Sé conciso y directo.\n"
+    "8. NUNCA digas 'como asistente', 'estoy aquí para', 'puedo decirte varias cosas'. Ve directo a la respuesta.\n"
+    "\n\n"
+    "EJEMPLO 1 - Pregunta específica:\n"
     "Documentos: [1] ISC - Semestre 1: Materias: Cálculo Diferencial (ACF-0901, 5 créditos), Fundamentos de Programación (AED-1285, 5 créditos)...\n"
     "Pregunta: ¿Qué materias son de primer semestre?\n"
     "Respuesta: Las materias del primer semestre son:\n"
@@ -146,12 +152,14 @@ SYSTEM_PROMPT = (
     "• Matemáticas Discretas (AEF-1041)\n"
     "• Taller de Administración (SCH-1024)\n"
     "• Fundamentos de Investigación (ACC-0906)\n\n"
-    "EJEMPLO DE RESPUESTA INCORRECTA (NUNCA hagas esto):\n"
-    "Documentos: [1] ISC - Semestre 1...\n"
-    "Pregunta: ¿Qué materias son de primer semestre?\n"
-    "Respuesta incorrecta: Las materias del primer semestre son Cálculo Integral y Programación Orientada a Objetos... "
-    "(ERROR: esas son del semestre 2, no del 1)\n\n"
-    "EJEMPLO DE 'NO SÉ':\n"
+    "EJEMPLO 2 - Pregunta general:\n"
+    "Documentos: [1] ISC - Semestre 1... [2] ISC - Semestre 2... [3] ISC - Objetivos y perfil de egreso...\n"
+    "Pregunta: ¿Qué sabes de sistemas computacionales?\n"
+    "Respuesta: La carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ tiene 58 materias en 9 semestres, con un total de 260 créditos. Los semestres incluyen:\n"
+    "• Semestre 1: Cálculo Diferencial, Fundamentos de Programación, Taller de Ética, etc.\n"
+    "• Semestre 2: Cálculo Integral, Programación Orientada a Objetos, etc.\n"
+    "[... y así sucesivamente resumiendo]\n\n"
+    "EJEMPLO 3 - Sin documentos:\n"
     "Documentos: (vacío o sin información relevante)\n"
     "Pregunta: ¿Cuál es el horario de la biblioteca?\n"
     "Respuesta: Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar."
@@ -160,71 +168,21 @@ SYSTEM_PROMPT = (
 def build_messages(query: str, context: str) -> list:
     """Construye la lista de mensajes para apply_chat_template de Qwen2."""
     user_content = (
-        "INSTRUCCIÓN: Lee los siguientes documentos y responde la pregunta del usuario. "
-        "Usa ÚNICAMENTE la información de los documentos. "
-        "Si la respuesta no está en los documentos, di: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.'\n\n"
+        "Lee los siguientes documentos y responde la pregunta del usuario. "
+        "Si la pregunta es específica, responde con datos exactos de los documentos. "
+        "Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y hay documentos relacionados, resume la información de esos documentos. "
+        "Si no hay documentos relacionados, di: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.'\n\n"
         "DOCUMENTOS:\n"
         "===========\n"
         f"{context}\n"
         "===========\n\n"
-        f"PREGUNTA DEL USUARIO: {query}\n\n"
-        "Responde de forma directa y concisa usando solo los documentos anteriores."
+        f"PREGUNTA: {query}\n\n"
+        "Responde de forma directa y concisa."
     )
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_content}
     ]
-
-def clean_response(text: str) -> str:
-    """
-    Post-processing para limpiar alucinaciones comunes del modelo pequeño.
-    """
-    import re
-    
-    original = text.strip()
-    
-    # Lista de frases que indican alucinación o respuesta genérica
-    hallucination_patterns = [
-        r"(?i)linux es una familia de",
-        r"(?i)como asistente",
-        r"(?i)estoy aquí para ayudarte",
-        r"(?i)estoy aquí para asistirte",
-        r"(?i)puedo decirte varias cosas sobre",
-        r"(?i)por lo tanto",
-        r"(?i)en conclusión",
-        r"(?i)en resumen",
-        r"(?i)es importante tener en cuenta",
-        r"(?i)te recomendaría verificar",
-        r"(?i)sin embargo",
-        r"(?i)por otro lado",
-        r"(?i)aunque no tenga información específica",
-        r"(?i)aunque no tengo información",
-        r"(?i)no tengo información específica sobre",
-    ]
-    
-    # Detectar si la respuesta es probablemente una alucinación
-    is_hallucination = any(re.search(p, original) for p in hallucination_patterns)
-    
-    # Si es muy corta y genérica, probablemente es alucinación
-    if len(original) < 30 and ("no" in original.lower() or "sé" in original.lower() or "información" in original.lower()):
-        is_hallucination = True
-    
-    # Si menciona cosas que NO están en los documentos conocidos
-    if "microsoft" in original.lower() or "windows" in original.lower() or "macos" in original.lower():
-        is_hallucination = True
-    
-    if is_hallucination:
-        return "Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar."
-    
-    # Limpiar repeticiones al final
-    sentences = original.split('. ')
-    if len(sentences) > 2:
-        # Eliminar última oración si es casi igual a la penúltima
-        if sentences[-1].strip() and sentences[-2].strip():
-            if sentences[-1][:20].lower() == sentences[-2][:20].lower():
-                original = '. '.join(sentences[:-1])
-    
-    return original.strip()
 
 
 # ──────────────────────────────────────────────────────────────
@@ -266,21 +224,18 @@ async def chat(request: ChatRequest):
         inputs = tokenizer(prompt, return_tensors="pt").to(llm_model.device)
         outputs = llm_model.generate(
             **inputs,
-            max_new_tokens=400,          # Más tokens para respuestas completas
+            max_new_tokens=400,
             do_sample=True,
-            temperature=0.3,              # Baja temperatura = menos inventos
-            top_p=0.85,                   # Más conservador
-            top_k=40,                     # Restringe vocabulario
-            repetition_penalty=1.15,      # Penaliza repeticiones
+            temperature=0.5,              # Balanceado: creatividad controlada
+            top_p=0.9,
+            top_k=50,
+            repetition_penalty=1.1,
             pad_token_id=tokenizer.eos_token_id,
             eos_token_id=tokenizer.eos_token_id
         )
         
         generated_ids = outputs[0][inputs["input_ids"].shape[-1]:]
         response_text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
-        
-        # Post-processing: limpiar alucinaciones comunes
-        response_text = clean_response(response_text)
         
     except Exception as e:
         response_text = f"Error al generar respuesta: {str(e)}"
