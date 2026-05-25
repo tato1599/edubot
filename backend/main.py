@@ -130,54 +130,67 @@ class StatusResponse(BaseModel):
 # Prompt Builder (formato chat Qwen2)
 # ──────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "Eres EduBot, un asistente virtual del TecNM ITCJ. Tu trabajo es responder preguntas basándote ÚNICAMENTE en los documentos que te proporciono. "
+    "Eres EduBot, un asistente virtual del TecNM ITCJ que ayuda a estudiantes con trámites escolares, información de la carrera de Ingeniería en Sistemas Computacionales, y nutrición escolar. "
+    "Responde SIEMPRE en español, de forma clara, concisa y amigable. "
+    "Usa viñetas (•) para listas. Ve directo a la respuesta sin frases introductorias como 'como asistente' o 'estoy aquí para'. "
     "\n\n"
-    "REGLAS OBLIGATORIAS:\n"
-    "1. Responde SIEMPRE en español.\n"
-    "2. Usa ÚNICAMENTE la información de los documentos proporcionados.\n"
-    "3. NO uses conocimiento general de internet. NO inventes datos. NO supongas.\n"
-    "4. Si la pregunta es específica y la respuesta está en los documentos, responde con los datos exactos.\n"
-    "5. Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y hay documentos relacionados, RESUME la información de esos documentos.\n"
-    "6. Si NO hay documentos relacionados con la pregunta, di: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.'\n"
-    "7. Usa viñetas (•) para listas. Sé conciso y directo.\n"
-    "8. NUNCA digas 'como asistente', 'estoy aquí para', 'puedo decirte varias cosas'. Ve directo a la respuesta.\n"
-    "\n\n"
-    "EJEMPLO 1 - Pregunta específica:\n"
-    "Documentos: [1] ISC - Semestre 1: Materias: Cálculo Diferencial (ACF-0901, 5 créditos), Fundamentos de Programación (AED-1285, 5 créditos)...\n"
-    "Pregunta: ¿Qué materias son de primer semestre?\n"
-    "Respuesta: Las materias del primer semestre son:\n"
-    "• Cálculo Diferencial (ACF-0901)\n"
-    "• Fundamentos de Programación (AED-1285)\n"
-    "• Taller de Ética (ACA-0907)\n"
-    "• Matemáticas Discretas (AEF-1041)\n"
-    "• Taller de Administración (SCH-1024)\n"
-    "• Fundamentos de Investigación (ACC-0906)\n\n"
-    "EJEMPLO 2 - Pregunta general:\n"
-    "Documentos: [1] ISC - Semestre 1... [2] ISC - Semestre 2... [3] ISC - Objetivos y perfil de egreso...\n"
-    "Pregunta: ¿Qué sabes de sistemas computacionales?\n"
-    "Respuesta: La carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ tiene 58 materias en 9 semestres, con un total de 260 créditos. Los semestres incluyen:\n"
-    "• Semestre 1: Cálculo Diferencial, Fundamentos de Programación, Taller de Ética, etc.\n"
-    "• Semestre 2: Cálculo Integral, Programación Orientada a Objetos, etc.\n"
-    "[... y así sucesivamente resumiendo]\n\n"
-    "EJEMPLO 3 - Sin documentos:\n"
-    "Documentos: (vacío o sin información relevante)\n"
-    "Pregunta: ¿Cuál es el horario de la biblioteca?\n"
-    "Respuesta: Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar."
+    "REGLAS:\n"
+    "1. Usa ÚNICAMENTE la información que tienes. NO inventes datos. NO uses conocimiento de internet.\n"
+    "2. Si la pregunta es específica y tienes la respuesta, responde con los datos exactos.\n"
+    "3. Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y tienes información relacionada, RESUME lo que sabes de forma natural.\n"
+    "4. Si NO tienes información sobre lo que preguntan, di simplemente: 'Lo siento, no tengo esa información. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.' NUNCA digas 'los documentos no contienen' o menciones que buscaste en archivos.\n"
+    "5. Si alguien pregunta algo ambiguo ('sistemas', 'la carrera') y tienes información de 'sistemas computacionales', asume que se refiere a eso y responde naturalmente.\n"
 )
+
+def expand_query(query: str) -> str:
+    """
+    Expande sinónimos comunes para mejorar la recuperación del RAG.
+    Ejemplo: 'sistemas' -> 'sistemas computacionales ISC'
+    """
+    q_lower = query.lower()
+    expansions = []
+    
+    # Mapeo de sinónimos/ambiguaciones
+    synonyms = {
+        'sistemas': 'sistemas computacionales ISC ingenieria',
+        'la carrera': 'ingenieria sistemas computacionales ISC reticula',
+        'primer semestre': 'semestre 1',
+        'segundo semestre': 'semestre 2',
+        'tercer semestre': 'semestre 3',
+        'cuarto semestre': 'semestre 4',
+        'quinto semestre': 'semestre 5',
+        'sexto semestre': 'semestre 6',
+        'séptimo semestre': 'semestre 7',
+        'septimo semestre': 'semestre 7',
+        'octavo semestre': 'semestre 8',
+        'noveno semestre': 'semestre 9',
+        'servicio social': 'servicio social liberacion constancia 480 horas',
+        'ss': 'servicio social liberacion constancia',
+        'residencia': 'residencia profesional',
+        'titulacion': 'titulacion opciones tesis ceneval',
+        'beca': 'becas excelencia economico descuento',
+    }
+    
+    for key, expansion in synonyms.items():
+        if key in q_lower:
+            expansions.append(expansion)
+    
+    if expansions:
+        return f"{query} {' '.join(expansions)}"
+    return query
 
 def build_messages(query: str, context: str) -> list:
     """Construye la lista de mensajes para apply_chat_template de Qwen2."""
     user_content = (
-        "Lee los siguientes documentos y responde la pregunta del usuario. "
-        "Si la pregunta es específica, responde con datos exactos de los documentos. "
-        "Si la pregunta es general ('qué sabes de...', 'cuéntame sobre...') y hay documentos relacionados, resume la información de esos documentos. "
-        "Si no hay documentos relacionados, di: 'Lo siento, no tengo esa información en mis documentos. Te sugiero acudir a Servicios Escolares o al Coordinador de Carrera para confirmar.'\n\n"
-        "DOCUMENTOS:\n"
-        "===========\n"
+        "INFORMACIÓN QUE TIENES:\n"
+        "===================\n"
         f"{context}\n"
-        "===========\n\n"
+        "===================\n\n"
         f"PREGUNTA: {query}\n\n"
-        "Responde de forma directa y concisa."
+        "Responde como EduBot, el asistente escolar. Sé natural y directo. "
+        "Si la pregunta es general y tienes información relacionada, resume lo que sabes. "
+        "Si no sabes la respuesta, di que no tienes la información y sugiere acudir a Servicios Escolares. "
+        "NO digas 'los documentos no contienen' ni menciones que buscaste archivos."
     )
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -207,9 +220,10 @@ async def chat(request: ChatRequest):
     if llm_model is None or tokenizer is None:
         raise HTTPException(status_code=503, detail="Modelo de lenguaje no disponible")
     
-    # 1. Recuperar contexto relevante
-    context = rag_engine.build_context(request.message, top_k=TOP_K_RETRIEVAL)
-    sources = rag_engine.search(request.message, top_k=TOP_K_RETRIEVAL)
+    # 1. Expandir sinónimos y recuperar contexto relevante
+    expanded_query = expand_query(request.message)
+    context = rag_engine.build_context(expanded_query, top_k=TOP_K_RETRIEVAL)
+    sources = rag_engine.search(expanded_query, top_k=TOP_K_RETRIEVAL)
     
     # 2. Construir mensajes y aplicar chat template
     messages = build_messages(request.message, context)
