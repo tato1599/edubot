@@ -389,7 +389,9 @@ html, body {
 .welcome-title {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.25rem;
+    text-align: center;
 }
 
 .title-line {
