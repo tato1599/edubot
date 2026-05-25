@@ -22,12 +22,208 @@ let isWaiting = false;
 
 // ── Inicialización ──
 document.addEventListener('DOMContentLoaded', () => {
+    initSithCursor();
     initEpicAnimations();
-    generateEnergyParticles();
+    generateSaberSparks();
     setupEventListeners();
     setupMagneticButtons();
     setupParallax();
+    initGlitchEffect();
+    initForceInput();
 });
+
+// ── 🗡️ CURSOR SITH CON TRAIL DE SABLE LÁSER ──
+function initSithCursor() {
+    // Crear cursor personalizado
+    const cursor = document.createElement('div');
+    cursor.className = 'sith-cursor';
+    document.body.appendChild(cursor);
+    
+    // Array para el trail (rastro)
+    const trails = [];
+    const maxTrails = 15;
+    
+    for (let i = 0; i < maxTrails; i++) {
+        const trail = document.createElement('div');
+        trail.className = 'sith-trail';
+        document.body.appendChild(trail);
+        trails.push({ element: trail, x: 0, y: 0, life: 0 });
+    }
+    
+    let mouseX = 0, mouseY = 0;
+    let isHovering = false;
+    
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Actualizar cursor principal
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+        
+        // Actualizar trail
+        for (let i = trails.length - 1; i > 0; i--) {
+            trails[i].x = trails[i - 1].x;
+            trails[i].y = trails[i - 1].y;
+            trails[i].life = trails[i - 1].life;
+        }
+        trails[0].x = mouseX;
+        trails[0].y = mouseY;
+        trails[0].life = 1;
+        
+        // Renderizar trail
+        trails.forEach((t, i) => {
+            const opacity = (1 - i / maxTrails) * 0.6;
+            const scale = 1 - i / maxTrails;
+            t.element.style.left = t.x + 'px';
+            t.element.style.top = t.y + 'px';
+            t.element.style.opacity = opacity;
+            t.element.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        });
+    });
+    
+    // Detectar hover en elementos interactivos
+    const interactiveElements = document.querySelectorAll('button, a, .pill, input, textarea');
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            isHovering = true;
+            cursor.classList.add('hover');
+        });
+        el.addEventListener('mouseleave', () => {
+            isHovering = false;
+            cursor.classList.remove('hover');
+        });
+    });
+    
+    // Click con efecto de explosión de chispas
+    document.addEventListener('click', (e) => {
+        createSparkExplosion(e.clientX, e.clientY);
+    });
+}
+
+function createSparkExplosion(x, y) {
+    for (let i = 0; i < 8; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'spark';
+        spark.style.left = x + 'px';
+        spark.style.top = y + 'px';
+        document.body.appendChild(spark);
+        
+        const angle = (Math.PI * 2 * i) / 8;
+        const distance = 30 + Math.random() * 30;
+        
+        gsap.to(spark, {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+            opacity: 0,
+            scale: 0,
+            duration: 0.5 + Math.random() * 0.3,
+            ease: 'power2.out',
+            onComplete: () => spark.remove()
+        });
+    }
+}
+
+// ── ✨ CHISPAS DE SABLE LÁSER (partículas mejoradas) ──
+function generateSaberSparks() {
+    for (let i = 0; i < 50; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'spark';
+        spark.style.left = Math.random() * 100 + '%';
+        spark.style.top = Math.random() * 100 + '%';
+        const size = Math.random() * 4 + 1;
+        spark.style.width = size + 'px';
+        spark.style.height = size + 'px';
+        spark.style.opacity = Math.random() * 0.5 + 0.2;
+        particlesContainer.appendChild(spark);
+        
+        if (typeof gsap !== 'undefined') {
+            // Movimiento errático como chispas de sable
+            const tl = gsap.timeline({ repeat: -1, delay: Math.random() * 5 });
+            
+            tl.to(spark, {
+                y: -100 - Math.random() * 200,
+                x: (Math.random() - 0.5) * 200,
+                opacity: 0,
+                duration: 2 + Math.random() * 3,
+                ease: 'power1.out'
+            })
+            .set(spark, {
+                y: 0,
+                x: 0,
+                opacity: Math.random() * 0.5 + 0.2,
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%'
+            });
+            
+            // Pulso de brillo intenso
+            gsap.to(spark, {
+                boxShadow: `0 0 ${Math.random() * 15 + 8}px rgba(220, 38, 38, 0.8), 0 0 ${Math.random() * 25 + 15}px rgba(239, 68, 68, 0.5)`,
+                duration: 0.3 + Math.random() * 0.5,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut'
+            });
+        }
+    }
+}
+
+// ── ⚡ EFECTO GLITCH EN SUBTÍTULO ──
+function initGlitchEffect() {
+    const subtitle = document.querySelector('.title-sub');
+    if (!subtitle) return;
+    
+    // Glitch aleatorio cada 5-10 segundos
+    setInterval(() => {
+        if (Math.random() > 0.7 && !chatScreen.classList.contains('hidden')) return; // No glitch en chat
+        
+        subtitle.classList.add('glitching');
+        
+        // Sonido visual (sin audio real, solo el efecto visual)
+        setTimeout(() => {
+            subtitle.classList.remove('glitching');
+        }, 300);
+    }, 6000 + Math.random() * 4000);
+}
+
+// ── 🌟 EFECTO FORCE EN INPUT ACTIVO ──
+function initForceInput() {
+    const wrapper = document.querySelector('.input-wrapper');
+    if (!wrapper) return;
+    
+    messageInput.addEventListener('focus', () => {
+        wrapper.classList.add('force-active');
+    });
+    
+    messageInput.addEventListener('blur', () => {
+        wrapper.classList.remove('force-active');
+    });
+}
+
+// ── 🎭 EASTER EGGS SITH ──
+const SITH_EASTER_EGGS = {
+    'lado oscuro': 'El lado oscuro es un camino a muchas habilidades que algunos consideran... antinaturales. Pero en el TecNM ITCJ, prefiero el lado del conocimiento. ¿En qué puedo ayudarte?',
+    'sith': 'Los Sith se rigen por la Regla de Dos: un maestro y un aprendiz. En el TecNM, nosotros nos regimos por la Regla del Estudiante: ¡estudia mucho y aprueba tus materias!',
+    'force': 'Que la Fuerza te acompañe... y también tus estudios. ¿Necesitas ayuda con algo del TecNM ITCJ?',
+    'sable': 'Un sable láser rojo requiere cristales sintéticos del lado oscuro. Aquí en el Tec usamos conocimiento real, no sintético. ¿Qué información buscas?',
+    'darth': 'Darth Vader tenía un 96% de midiclorianos. Tú tienes un 100% de potencial estudiantil. ¡Úsalo! ¿En qué te ayudo?',
+    'vader': 'Luke, yo soy tu... asistente virtual del TecNM ITCJ. ¿Necesitas algo?',
+    'padawan': 'Un Padawan necesita entrenar. Un estudiante del Tec necesita... esta retícula. ¿Quieres ver tu plan de estudios?',
+    'maestro': 'El maestro Yoda decía: "Hazlo o no lo hagas, pero no lo intentes". En el Tec decimos: "Estudia o no estudies, pero no lo dejes para el último día".',
+    'jedi': 'Los Jedi meditan para encontrar paz. Los estudiantes del Tec... también deberían meditar antes de los exámenes. ¿Necesitas ayuda con algo?',
+    'imperio': 'El Imperio Galáctico construyó la Estrella de la Muerte. El TecNM ITCJ construye... ingenieros de sistemas. Mucho más útil.',
+    'rebelion': 'La Rebelión lucha contra el Imperio. Nosotros luchamos contra... las materias reprobadas y los trámites burocráticos. ¡Estoy aquí para ayudarte!',
+};
+
+function checkSithEasterEgg(text) {
+    const lowerText = text.toLowerCase();
+    for (const [key, response] of Object.entries(SITH_EASTER_EGGS)) {
+        if (lowerText.includes(key)) {
+            return response;
+        }
+    }
+    return null;
+}
 
 // ── Animaciones ÉPICAS de entrada ──
 function initEpicAnimations() {
@@ -334,6 +530,16 @@ function handleSend() {
     addUserMessage(text);
     messageInput.value = '';
     messageInput.style.height = 'auto';
+    
+    // Verificar easter eggs Sith primero
+    const easterEgg = checkSithEasterEgg(text);
+    if (easterEgg) {
+        showTyping();
+        setTimeout(() => {
+            addBotMessage(easterEgg);
+        }, 800 + Math.random() * 600);
+        return;
+    }
     
     showTyping();
     sendToAPI(text);
