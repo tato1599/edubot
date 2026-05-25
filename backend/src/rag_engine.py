@@ -238,9 +238,70 @@ class RAGEngine:
         else:
             return self._search_keyword(query, top_k)
     
+    def _apply_semantic_boost(self, query: str, similarities: np.ndarray) -> np.ndarray:
+        """
+        Detecta números ordinales en la query y boostea documentos relevantes.
+        Esto corrige el problema donde embeddings confunden 'primer' con 'segundo'.
+        """
+        import re
+        query_lower = query.lower()
+        
+        # Mapeo de ordinales a números de semestre
+        ordinal_map = {
+            r'\bprimer\b|\bprimero\b|1er|1°|1º': 1,
+            r'\bsegundo\b|2do|2°|2º': 2,
+            r'\btercer\b|\btercero\b|3er|3°|3º': 3,
+            r'\bcuarto\b|4to|4°|4º': 4,
+            r'\bquinto\b|5to|5°|5º': 5,
+            r'\bsexto\b|6to|6°|6º': 6,
+            r'\bséptimo\b|\bseptimo\b|7mo|7°|7º': 7,
+            r'\boctavo\b|8vo|8°|8º': 8,
+            r'\bnoveno\b|9no|9°|9º': 9,
+        }
+        
+        # Detectar semestre buscado
+        target_semester = None
+        for pattern, num in ordinal_map.items():
+            if re.search(pattern, query_lower):
+                target_semester = num
+                break
+        
+        # Si no hay número ordinal, también buscar "semestre [número]"
+        if target_semester is None:
+            m = re.search(r'semestre\s+(\d+)', query_lower)
+            if m:
+                target_semester = int(m.group(1))
+        
+        if target_semester is None:
+            return similarities
+        
+        # Boostear documentos del semestre correcto
+        boosted = similarities.copy()
+        for i, doc in enumerate(self.documents):
+            titulo = doc['titulo'].lower()
+            contenido = doc['contenido'].lower()
+            
+            # Si el documento es del semestre correcto, boost significativo
+            sem_text = f'semestre {target_semester}'
+            if sem_text in titulo or sem_text in contenido:
+                boosted[i] += 0.25  # Boost grande para superar similitud semántica confusa
+            
+            # Penalizar otros semestres si es claro que no son el correcto
+            for other in range(1, 10):
+                if other != target_semester:
+                    other_text = f'semestre {other}'
+                    if other_text in titulo and 'semestre' in query_lower:
+                        boosted[i] -= 0.05
+        
+        return boosted
+    
     def _search_embedding(self, query: str, top_k: int) -> List[Dict[str, Any]]:
         query_embedding = self.model.encode([query], convert_to_numpy=True)
         similarities = cosine_similarity(query_embedding, self.embeddings)[0]
+        
+        # Aplicar boosting semántico para ordinales
+        similarities = self._apply_semantic_boost(query, similarities)
+        
         top_indices = np.argsort(similarities)[::-1][:top_k]
         
         results = []
