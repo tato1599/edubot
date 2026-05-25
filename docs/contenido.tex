@@ -6,9 +6,9 @@
 \section{Resumen}
 \label{sec:resumen}
 
-El presente proyecto desarrolla \textit{EduBot}, un agente conversacional inteligente destinado a la comunidad estudiantil de una institución educativa superior. El sistema integra un modelo de lenguaje natural de ejecución local mediante la arquitectura \textit{Retrieval-Augmented Generation} (RAG), lo que permite responder consultas sobre trámites escolares (inscripción, reinscripción, constancias, becas y titulación) y nutrición escolar basada en el Sistema Mexicano de Alimentos Equivalentes (SMAE). La solución se compone de un backend en \textit{FastAPI} que orquesta la recuperación de información desde archivos JSON locales y la generación de respuestas con un modelo de lenguaje pequeño (\texttt{SmolLM2-360M-Instruct}), y un frontend web diseñado con principios de \textit{glassmorphism} y animaciones fluidas mediante la biblioteca GSAP. El resultado es una interfaz de usuario interactiva, estéticamente atractiva y funcionalmente robusta, que demuestra la viabilidad de desplegar inteligencia artificial generativa en hardware de gama media sin dependencia de servicios de terceros.
+El presente proyecto desarrolla \textit{EduBot}, un agente conversacional inteligente destinado a la comunidad estudiantil del Instituto Tecnológico de Ciudad Juárez (ITCJ), dependiente del Tecnológico Nacional de México (TecNM). El sistema integra un modelo de lenguaje natural de ejecución local mediante la arquitectura \textit{Retrieval-Augmented Generation} (RAG), lo que permite responder consultas sobre trámites escolares (inscripción, reinscripción, constancias, becas, titulación, cambio de carrera y servicio social), nutrición escolar basada en el Sistema Mexicano de Alimentos Equivalentes (SMAE), e información académica detallada de la carrera de Ingeniería en Sistemas Computacionales (plan de estudios ISIC-2010-224). La solución se compone de un backend en \textit{FastAPI} que orquesta la recuperación de información desde archivos JSON locales y la generación de respuestas con un modelo de lenguaje local (\texttt{Qwen2-1.5B-Instruct}), y un frontend web diseñado con principios de \textit{glassmorphism} y animaciones fluidas mediante la biblioteca GSAP. El resultado es una interfaz de usuario interactiva, estéticamente atractiva y funcionalmente robusta, que demuestra la viabilidad de desplegar inteligencia artificial generativa en hardware de gama media sin dependencia de servicios de terceros.
 
-\textbf{Palabras clave:} modelo de lenguaje, RAG, SMAE, trámites escolares, FastAPI, transformers, inteligencia artificial educativa.
+\textbf{Palabras clave:} modelo de lenguaje, RAG, SMAE, trámites escolares, retícula de estudios, FastAPI, transformers, inteligencia artificial educativa, sistemas computacionales.
 
 
 \section{Introducción}
@@ -16,31 +16,45 @@ El presente proyecto desarrolla \textit{EduBot}, un agente conversacional inteli
 
 \subsection{Planteamiento del problema}
 
-En el contexto de las instituciones educativas, los estudiantes enfrentan diariamente la necesidad de obtener información precisa sobre trámites administrativos y recomendaciones nutricionales. Tradicionalmente, esta información se dispersa en reglamentos impresos, portales web poco intuitivos o depende de la disponibilidad del personal de Servicios Escolares. Por otro lado, el Sistema Mexicano de Alimentos Equivalentes (SMAE) constituye la referencia normativa para la planeación de menús en comedores escolares; sin embargo, su consulta requiere conocimiento técnico que no siempre poseen los estudiantes o los responsables de los comedores.
+En el contexto de las instituciones educativas, los estudiantes enfrentan diariamente la necesidad de obtener información precisa sobre trámites administrativos, recomendaciones nutricionales y detalles de su plan de estudios. Tradicionalmente, esta información se dispersa en reglamentos impresos, portales web poco intuitivos, depende de la disponibilidad del personal de Servicios Escolares, o está contenida en documentos oficiales difíciles de consultar (como retículas de carrera en formato PDF). Por otro lado, el Sistema Mexicano de Alimentos Equivalentes (SMAE) constituye la referencia normativa para la planeación de menús en comedores escolares; sin embargo, su consulta requiere conocimiento técnico que no siempre poseen los estudiantes o los responsables de los comedores.
+
+En el caso específico de la carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ, los estudiantes necesitan consultar frecuentemente: materias por semestre, prerequisitos, créditos, trámites de servicio social, residencia profesional, y opciones de titulación. La ausencia de un canal único de consulta provoca demoras, errores en la planeación académica y pérdida de tiempo tanto para estudiantes como para el personal administrativo.
 
 \subsection{Justificación}
 
 La irrupción de los \textit{Large Language Models} (LLM) ha democratizado el acceso a sistemas de procesamiento de lenguaje natural de alta calidad. No obstante, la mayoría de las soluciones comerciales (p. ej., ChatGPT, Claude) presentan tres limitaciones para el ámbito educativo: (1) dependencia de conectividad a Internet y servicios de pago, (2) tendencia a alucinar información cuando no poseen conocimiento específico de la institución, y (3) ausencia de garantías de privacidad sobre los datos institucionales. Por ello, resulta pertinente explorar arquitecturas locales que combinen la potencia generativa de los LLM con bases de conocimiento estructuradas propias de la institución.
 
+Este proyecto se enfoca específicamente en el TecNM ITCJ y su carrera de Ingeniería en Sistemas Computacionales, dotando al asistente de conocimiento profundo sobre la retícula oficial ISIC-2010-224 y los trámites administrativos más frecuentes.
+
 \subsection{Objetivos}
 
 \subsubsection{Objetivo general}
 
-Diseñar e implementar un agente conversacional inteligente que, mediante la arquitectura RAG y un modelo de lenguaje local, responda consultas sobre trámites escolares y nutrición escolar basada en el SMAE.
+Diseñar e implementar un agente conversacional inteligente que, mediante la arquitectura RAG y un modelo de lenguaje local, responda consultas sobre trámites escolares, nutrición escolar basada en el SMAE, y información académica de la carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ.
 
 \subsubsection{Objetivos específicos}
 
 \begin{enumerate}
-    \item Construir una base de conocimiento estructurada en formato JSON que integre procedimientos de trámites escolares y tablas equivalentes del SMAE.
-    \item Implementar un motor de recuperación semántica (RAG) mediante embeddings de oraciones para localizar la información más relevante ante una consulta de usuario.
-    \item Integrar un modelo de lenguaje local (\texttt{SmolLM2-360M-Instruct}) para la generación de respuestas coherentes y contextualizadas en español.
+    \item Construir una base de conocimiento estructurada en formato JSON que integre procedimientos de trámites escolares, tablas equivalentes del SMAE, y la retícula completa de la carrera de Ingeniería en Sistemas Computacionales (plan ISIC-2010-224).
+    \item Implementar un motor de recuperación semántica (RAG) mediante embeddings de oraciones para localizar la información más relevante ante una consulta de usuario, con expansión de sinónimos y boosting semántico para ordinales (primer, segundo, etc.).
+    \item Integrar un modelo de lenguaje local (\texttt{Qwen2-1.5B-Instruct}) para la generación de respuestas coherentes y contextualizadas en español.
     \item Desarrollar una interfaz web interactiva con animaciones avanzadas (GSAP) que ofrezca una experiencia de usuario comparable a aplicaciones comerciales.
     \item Verificar el correcto funcionamiento del sistema mediante pruebas de integración entre el frontend, el backend y el modelo de lenguaje.
 \end{enumerate}
 
 \subsection{Alcances y limitaciones}
 
-El sistema opera con datos de demostración representativos de una universidad genérica; la conexión a bases de datos reales de la institución queda como trabajo futuro. El modelo de lenguaje empleado es de 360 millones de parámetros, lo cual garantiza ejecución ágil en una GPU de gama media (NVIDIA RTX~4060, 8~GB VRAM), pero limita la profundidad de razonamiento en comparación con modelos de decenas de miles de millones de parámetros. El sistema no implementa memoria de conversación extendida ni autenticación de usuarios, dado el carácter académico y de demostración del proyecto.
+El sistema opera con datos oficiales de la carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ (plan ISIC-2010-224) y trámites representativos de una universidad tecnológica. La conexión a bases de datos reales de la institución queda como trabajo futuro.
+
+El modelo de lenguaje empleado es de 1.5 mil millones de parámetros, lo cual garantiza ejecución en una GPU de gama media (NVIDIA RTX 4060, 8 GB VRAM) o incluso en CPU, pero limita la profundidad de razonamiento en comparación con modelos de decenas de miles de millones de parámetros. Sin embargo, la arquitectura RAG con expansión de sinónimos y post-processing mitiga en gran medida este problema.
+
+\textbf{Limitaciones actuales:}
+\begin{itemize}
+    \item El sistema \textbf{no implementa memoria de conversación extendida}: cada consulta es independiente. No recuerda preguntas anteriores ni mantiene contexto entre mensajes.
+    \item El modelo puede generar respuestas incompletas si la consulta es ambigua y el contexto recuperado no es suficiente.
+    \item No cuenta con autenticación de usuarios ni personalización por alumno.
+    \item Los datos de trámites son representativos y pueden no reflejar cambios recientes en los procedimientos administrativos del ITCJ.
+\end{itemize}
 
 
 \section{Marco Teórico}
@@ -48,7 +62,9 @@ El sistema opera con datos de demostración representativos de una universidad g
 
 \subsection{Large Language Models (LLM)}
 
-Un modelo de lenguaje de gran escala es una red neuronal profunda —habitualmente basada en la arquitectura \textit{Transformer}— entrenada sobre vastos corpus textuales para modelar la distribución de probabilidad de secuencias de palabras \cite{vaswani_attention_2017, brown_language_2020}. A diferencia de los sistemas basados en reglas, los LLM generalizan a tareas no vistas durante su entrenamiento mediante el mecanismo de \textit{prompting} o ajuste fino. En este trabajo se emplea un modelo de la familia \texttt{SmolLM2}, desarrollado por HuggingFace, optimizado para instrucciones y con soporte multilingüe en un tamaño reducido \cite{allal_smollm2_2024}.
+Un modelo de lenguaje de gran escala es una red neuronal profunda ---habitualmente basada en la arquitectura \textit{Transformer}--- entrenada sobre vastos corpus textuales para modelar la distribución de probabilidad de secuencias de palabras \cite{vaswani_attention_2017, brown_language_2020}. A diferencia de los sistemas basados en reglas, los LLM generalizan a tareas no vistas durante su entrenamiento mediante el mecanismo de \textit{prompting} o ajuste fino.
+
+En este trabajo se emplea el modelo \texttt{Qwen2-1.5B-Instruct}, desarrollado por Alibaba Cloud, que ofrece un balance entre calidad de respuesta en español y requerimientos computacionales moderados \cite{qwen2_2024}. Qwen2 es una familia de modelos de lenguaje grande que incluye modelos de diferentes tamaños, desde 0.5B hasta 72B de parámetros, con soporte multilingüe robusto y capacidad de seguimiento de instrucciones (instruction following).
 
 \subsection{Retrieval-Augmented Generation (RAG)}
 
@@ -87,7 +103,7 @@ El sistema sigue una arquitectura cliente-servidor desacoplada con tres capas pr
 
 \begin{enumerate}
     \item \textbf{Capa de presentación (frontend)}: interfaz web HTML5/CSS3/JavaScript que se comunica con el backend vía HTTP.
-    \item \textbf{Capa de aplicación (backend)}: API REST en FastAPI que coordina la recuperación de documentos y la generación de texto.
+    \item \textbf{Capa de aplicación (backend)}: API REST en FastAPI que coordina la recuperación de documentos, la expansión de sinónimos, y la generación de texto.
     \item \textbf{Capa de datos e inferencia}: archivos JSON locales que funcionan como base de conocimiento, más el modelo de lenguaje y el encoder de embeddings cargados en memoria.
 \end{enumerate}
 
@@ -96,9 +112,9 @@ El sistema sigue una arquitectura cliente-servidor desacoplada con tres capas pr
     \fbox{\parbox{0.85\textwidth}{\centering
         \textbf{Frontend} (HTML5 + GSAP) \\
         $\downarrow$ HTTP/JSON \\
-        \textbf{Backend} (FastAPI + RAG Engine) \\
+        \textbf{Backend} (FastAPI + RAG Engine + Expansión de sinónimos) \\
         $\downarrow$ \\
-        \textbf{Datos} (JSON locales) \quad + \quad \textbf{IA} (Embeddings + SmolLM2)
+        \textbf{Datos} (JSON locales: trámites + SMAE + retícula ISC) \quad + \quad \textbf{IA} (Embeddings + Qwen2-1.5B)
     }}
     \caption{Arquitectura de tres capas del sistema EduBot.}
     \label{fig:arquitectura}
@@ -106,31 +122,43 @@ El sistema sigue una arquitectura cliente-servidor desacoplada con tres capas pr
 
 \subsection{Base de conocimiento}
 
-Se diseñaron dos colecciones de documentos en formato JSON:
+Se diseñaron tres colecciones de documentos en formato JSON:
 
 \begin{itemize}
-    \item \texttt{tramites.json}: 12 documentos estructurados que cubren inscripción, reinscripción, constancias, equivalencias, becas, titulación y horarios de atención. Cada documento incluye un identificador, categoría, título, contenido textual descriptivo y palabras clave para el fallback de búsqueda.
+    \item \texttt{tramites.json}: 15 documentos estructurados que cubren inscripción, reinscripción, constancias, equivalencias, becas, titulación, horarios de atención, \textbf{cambio de carrera}, \textbf{servicio social} y \textbf{constancia de liberación de servicio social}. Cada documento incluye un identificador, categoría, título, contenido textual descriptivo y palabras clave para el fallback de búsqueda.
+    
     \item \texttt{smae.json}: 8 grupos de alimentos con sus porciones base, calorías, nutrientes, listado de equivalentes y recomendaciones específicas para el entorno escolar. Además incluye recomendaciones generales y dos menús de ejemplo (primaria y secundaria/preparatoria).
+    
+    \item \texttt{reticula\_isc.json}: contiene la información completa de la carrera de Ingeniería en Sistemas Computacionales del TecNM ITCJ (plan ISIC-2010-224), organizada en:
+    \begin{itemize}
+        \item Datos generales de la carrera (nombre, clave del plan, total de materias, créditos).
+        \item 9 semestres con materias detalladas (nombre, clave, horas teoría/práctica, créditos, área, prerequisitos).
+        \item Actividades integrales: Residencia Profesional (10 créditos), Servicio Social (10 créditos), Actividades Complementarias (5 créditos), y Especialidad (25 créditos).
+        \item Recomendaciones de plan de estudios y estrategias semestrales.
+        \item Objetivos educacionales y perfil de egreso.
+    \end{itemize}
 \end{itemize}
 
 El motor de RAG indexa todos estos documentos al iniciar el servidor, generando un embedding por documento mediante la concatenación de título, contenido y palabras clave para enriquecer la representación semántica.
 
-\subsection{Backend: motor RAG y API}
+\subsection{Backend: motor RAG, expansión de sinónimos y API}
 
 \subsubsection{Motor de recuperación}
 
 La clase \texttt{RAGEngine} implementa el ciclo completo de recuperación:
 
 \begin{enumerate}
-    \item \textit{Carga}: lee los archivos JSON y normaliza cada entrada a un objeto \texttt{Document} unificado.
+    \item \textit{Carga}: lee los archivos JSON (\texttt{tramites.json}, \texttt{smae.json}, \texttt{reticula\_isc.json}) y normaliza cada entrada a un objeto \texttt{Document} unificado.
     \item \textit{Indexación}: si \texttt{sentence-transformers} está disponible, codifica todos los documentos con \texttt{all-MiniLM-L6-v2} y almacena los vectores en un arreglo \texttt{NumPy}. En caso contrario, activa un modo \textit{fallback} basado en coincidencia de palabras clave ponderada.
-    \item \textit{Consulta}: proyecta la pregunta del usuario al espacio de embeddings y recupera los $k=3$ documentos de mayor similitud coseno (Ecuación~\ref{eq:cosine}).
+    \item \textit{Expansión de sinónimos}: antes de la consulta, el backend expande términos ambiguos (ej. ``sistemas'' $\rightarrow$ ``sistemas computacionales ISC ingeniería'', ``primer semestre'' $\rightarrow$ ``semestre 1'') para mejorar la recuperación semántica.
+    \item \textit{Boosting semántico para ordinales}: se detectan palabras ordinales (primer, segundo, etc.) y se aplica un boost adicional a los documentos del semestre correcto, evitando que la similitud semántica confunda semestres cercanos.
+    \item \textit{Consulta}: proyecta la pregunta del usuario (expandida) al espacio de embeddings y recupera los $k=5$ documentos de mayor similitud coseno (Ecuación~\ref{eq:cosine}).
     \item \textit{Contextualización}: concatena los documentos recuperados en un bloque de texto que se inyecta en el \textit{prompt} del modelo generativo.
 \end{enumerate}
 
 \subsubsection{Modelo de lenguaje}
 
-Se seleccionó \texttt{HuggingFaceTB/SmolLM2-360M-Instruct} por su balance entre calidad de respuesta en español y requerimientos computacionales moderados. El modelo se carga con precisión mixta FP16 en GPU (CUDA) mediante la biblioteca \texttt{transformers}. Los hiperparámetros de generación se fijaron en: temperatura 0.7, \textit{top-p} 0.9, penalización por repetición 1.1 y máximo 256 tokens nuevos. Estos valores buscan un equilibrio entre creatividad y fidelidad al contexto recuperado.
+Se seleccionó \texttt{Qwen/Qwen2-1.5B-Instruct} por su balance entre calidad de respuesta en español y requerimientos computacionales moderados. El modelo se carga con precisión mixta FP16 en GPU (CUDA) o FP32 en CPU mediante la biblioteca \texttt{transformers}. Los hiperparámetros de generación se fijaron en: temperatura 0.5, \textit{top-p} 0.9, penalización por repetición 1.1 y máximo 400 tokens nuevos. Estos valores buscan un equilibrio entre creatividad controlada y fidelidad al contexto recuperado.
 
 \subsubsection{Prompt engineering}
 
@@ -138,8 +166,10 @@ Se diseñó un \textit{system prompt} que instruye al modelo a:
 \begin{itemize}
     \item Responder únicamente en español.
     \item Anclar sus respuestas a la información del contexto documental.
-    \item Declinar educadamente cuando la información no esté disponible.
-    \item Presentar procedimientos en listas numeradas y recomendaciones nutricionales con claridad.
+    \item Declinar educadamente cuando la información no esté disponible, sin mencionar ``documentos'' ni ``fuentes''.
+    \item Distinguir entre preguntas específicas (responder con datos exactos) y preguntas generales (resumir información relacionada).
+    \item Asumir sinónimos ambiguos: si alguien pregunta ``sistemas'', asumir que se refiere a ``sistemas computacionales'' si hay información disponible.
+    \item Presentar procedimientos en listas numeradas y datos académicos con viñetas y claves de materia.
 \end{itemize}
 
 \subsubsection{API REST}
@@ -148,7 +178,7 @@ FastAPI expone tres endpoints principales:
 
 \begin{itemize}
     \item \texttt{GET /}: estado del sistema, modelo cargado y dispositivo (CPU/GPU).
-    \item \texttt{POST /chat}: recibe la pregunta del usuario, ejecuta el pipeline RAG + generación, y retorna la respuesta, las fuentes consultadas y metadatos del proceso.
+    \item \texttt{POST /chat}: recibe la pregunta del usuario, ejecuta el pipeline de expansión de sinónimos + RAG + generación, y retorna la respuesta, las fuentes consultadas y metadatos del proceso.
     \item \texttt{GET /stats}: estadísticas del motor RAG (documentos indexados, modelo de embeddings, fuentes disponibles).
 \end{itemize}
 
@@ -162,7 +192,7 @@ El frontend se desarrolló como una aplicación de página única (SPA) sin fram
 
 Incluye un logo animado con anillos pulsantes (CSS), tipografía \textit{Outfit} de Google Fonts, \textit{pills} de características y un botón de inicio con efecto \textit{shimmer}. El fondo está compuesto por tres orbes degradados con \texttt{filter: blur} y animación de flotación suave. GSAP orquesta la secuencia de entrada escalonada de todos los elementos.
 
-\subsubsection{Pantalla de chat}
+\subsubsection{Pantalla del chat}
 
 La interfaz de chat adopta el patrón \textit{glassmorphism}: paneles semitransparentes con \textit{backdrop-filter: blur}, bordes sutiles y sombras difusas. Los mensajes se distinguen visualmente: el usuario emite burbujas con degradado púrpura y el bot responde con paneles neutros bordeados. Cada mensaje nuevo anima su opacidad y posición vertical mediante GSAP.
 
@@ -181,7 +211,7 @@ La interfaz de chat adopta el patrón \textit{glassmorphism}: paneles semitransp
 
 \subsection{Despliegue local}
 
-El sistema se desplegó satisfactoriamente en una estación de trabajo con las siguientes características: procesador Intel Core i7, 32~GB de RAM, GPU NVIDIA GeForce RTX~4060 (8~GB VRAM, CUDA 12.1) y sistema operativo Linux. El tiempo de arranque del servidor es de aproximadamente 3--5 minutos, dominado por la descarga y carga del modelo \texttt{SmolLM2-360M-Instruct} en memoria GPU.
+El sistema se desplegó satisfactoriamente en una estación de trabajo con las siguientes características: procesador Intel Core i7, 32~GB de RAM, GPU NVIDIA GeForce RTX~4060 (8~GB VRAM, CUDA 12.1) y sistema operativo Linux. El tiempo de arranque del servidor es de aproximadamente 3--5 minutos, dominado por la descarga y carga del modelo \texttt{Qwen2-1.5B-Instruct} en memoria GPU.
 
 \subsection{Pruebas funcionales}
 
@@ -195,23 +225,25 @@ Se ejecutaron consultas representativas para evaluar la integridad del pipeline 
         \toprule
         \textbf{Consulta} & \textbf{Fuentes recuperadas} & \textbf{Comportamiento} \\
         \midrule
-        ``¿Cómo me inscribo si soy extranjero?'' & Trámite de extranjeros & Respuesta precisa con requisitos adicionales \\
+        ``¿Qué materias son de primer semestre?'' & ISC - Semestre 1 & Lista exacta de 6 materias con claves \\
+        ``¿Qué sabes de sistemas?'' & Retícula ISC general & Resumen de la carrera (58 materias, 260 créditos) \\
         ``¿Cuántas calorías tiene una porción de fruta?'' & Grupo Frutas (SMAE) & Dato correcto: 60~kcal \\
-        ``¿Qué necesito para reinscribirme?'' & Reinscripción semestral & Pasos numerados correctos \\
-        ``Recomiéndame un menú para primaria'' & Menú escolar básico & Sugerencia basada en el menú ejemplo \\
+        ``¿Cómo tramito cambio de carrera?'' & Cambio de carrera & Pasos numerados con requisitos y costo \\
+        ``¿Qué necesito para servicio social?'' & Servicio Social & 480 horas, organismos aceptados, requisitos \\
         ``¿Cuál es la capital de Francia?'' & Ninguna (fuera de dominio) & Respuesta declinada amablemente \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-En todos los casos dentro del dominio, el sistema recuperó al menos una fuente relevante y la respuesta del modelo se mantuvo fiel al contenido documental. Para la consulta fuera de dominio, el modelo declinó responder conforme a las instrucciones del \textit{system prompt}, demostrando el efecto de anclaje del contexto.
+En todos los casos dentro del dominio, el sistema recuperó al menos una fuente relevante y la respuesta del modelo se mantuvo fiel al contenido documental. La expansión de sinónimos permitió que consultas ambiguas como ``sistemas'' se resolvieran correctamente hacia información de la carrera de Ingeniería en Sistemas Computacionales.
 
 \subsection{Requisitos no funcionales}
 
 \begin{itemize}
-    \item \textbf{Tiempo de respuesta}: entre 2 y 5 segundos por consulta, dependiendo de la longitud del contexto recuperado y la cantidad de tokens generados.
-    \item \textbf{Consumo de VRAM}: el modelo residente ocupa aproximadamente 1.2~GB en FP16, dejando margen suficiente para otras aplicaciones en la RTX~4060.
+    \item \textbf{Tiempo de respuesta}: entre 2 y 5 segundos por consulta en GPU, y 10--20 segundos en CPU, dependiendo de la longitud del contexto recuperado y la cantidad de tokens generados.
+    \item \textbf{Consumo de VRAM}: el modelo residente ocupa aproximadamente 3.5~GB en FP16, dejando margen suficiente para otras aplicaciones en la RTX~4060.
     \item \textbf{Portabilidad}: al ejecutarse completamente local, el sistema no requiere claves de API ni conectividad a Internet una vez descargados los modelos.
+    \item \textbf{Sin memoria de conversación}: cada consulta es independiente. El sistema no mantiene estado entre mensajes, lo cual simplifica la arquitectura pero limita diálogos extensos.
 \end{itemize}
 
 
@@ -220,16 +252,22 @@ En todos los casos dentro del dominio, el sistema recuperó al menos una fuente 
 
 \subsection{Conclusiones}
 
-El proyecto EduBot demuestra que es posible construir un asistente conversacional útil y estéticamente atractivo para el ámbito educativo utilizando exclusivamente software libre y hardware de gama media. La arquitectura RAG resultó ser una estrategia efectiva para mitigar las alucinaciones del modelo de lenguaje, anclando sus respuestas a una base de conocimiento documental estructurada. El diseño de la interfaz, enfatizando animaciones fluidas con GSAP y el estilo glassmorphism, eleva la percepción de calidad del sistema por encima de prototipos funcionales típicos, posicionándolo como una solución cercana al nivel comercial.
+El proyecto EduBot demuestra que es posible construir un asistente conversacional útil, especializado y estéticamente atractivo para el ámbito educativo utilizando exclusivamente software libre y hardware de gama media. La arquitectura RAG, complementada con la expansión de sinónimos y el boosting semántico para ordinales, resultó ser una estrategia efectiva para mitigar las alucinaciones del modelo de lenguaje y mejorar la precisión de las respuestas en consultas académicas.
+
+La integración de la retícula completa de la carrera de Ingeniería en Sistemas Computacionales (ISIC-2010-224) permite al asistente responder con exactitud sobre materias, prerequisitos, créditos y actividades integrales (servicio social, residencia profesional, especialidad), posicionándolo como una herramienta práctica para estudiantes del TecNM ITCJ.
+
+El diseño de la interfaz, enfatizando animaciones fluidas con GSAP y el estilo glassmorphism, eleva la percepción de calidad del sistema por encima de prototipos funcionales típicos, acercándolo al nivel comercial.
 
 \subsection{Trabajo futuro}
 
 Se identifican las siguientes líneas de mejora para iteraciones posteriores:
 
 \begin{enumerate}
-    \item \textbf{Migración a base de datos relacional híbrida}: reemplazar los archivos JSON por PostgreSQL con soporte nativo para tipos JSONB, lo cual facilitaría la administración concurrente de la base de conocimiento y permitiría consultas estructuradas más complejas.
-    \item \textbf{Extensión con grafos de conocimiento}: aprovechar las extensiones de grafos disponibles en PostgreSQL (o motores especializados como Neo4j) para modelar relaciones entre trámites, dependencias administrativas y prerequisitos de documentos, habilitando respuestas de mayor sofisticación.
     \item \textbf{Memoria de conversación}: implementar un buffer deslizante de mensajes históricos para que el agente mantenga coherencia temática a lo largo de diálogos extensos.
+    \item \textbf{Migración a base de datos relacional híbrida}: reemplazar los archivos JSON por PostgreSQL con soporte nativo para tipos JSONB, lo cual facilitaría la administración concurrente de la base de conocimiento y permitiría consultas estructuradas más complejas.
+    \item \textbf{Extensión con grafos de conocimiento}: aprovechar las extensiones de grafos disponibles en PostgreSQL (o motores especializados como Neo4j) para modelar relaciones entre trámites, dependencias administrativas y prerequisitos de materias, habilitando respuestas de mayor sofisticación.
+    \item \textbf{Integración de otras carreras}: extender la base de conocimiento para incluir retículas de otras carreras del TecNM ITCJ (Ingeniería Industrial, Ingeniería Mecatrónica, etc.).
     \item \textbf{Multimodalidad}: integrar capacidad de procesamiento de imágenes para que los usuarios puedan consultar menús fotografiados o diagramas de flujo de trámites.
     \item \textbf{Evaluación cuantitativa}: diseñar un conjunto de preguntas con respuestas esperadas (\textit{ground truth}) para medir métricas de recuperación (precisión@k, recall) y generación (BLEU, ROUGE, evaluación humana).
+    \item \textbf{Autenticación y personalización}: implementar login de estudiantes para personalizar respuestas según su carrera, semestre y progreso académico.
 \end{enumerate}
