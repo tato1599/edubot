@@ -11,6 +11,24 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <!-- Pantalla de carga inicial -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-logo">
+            <div class="loading-ring"></div>
+            <div class="loading-core">
+                <img src="/static/img/itcj.png" alt="Logo ITCJ" />
+            </div>
+        </div>
+        <div class="loading-text">
+            <span class="loading-title">Inicializando sistema</span>
+            <span class="loading-subtitle">Cargando modelo de lenguaje...</span>
+        </div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <div class="loading-hint">Esto puede tomar unos minutos la primera vez</div>
+    </div>
+
     <!-- Fondo animado -->
     <div class="bg-mesh">
         <div class="orb orb-1"></div>

@@ -7,6 +7,10 @@ const API_BASE = (window.location.protocol === 'file:')
     ? 'http://localhost:8000' 
     : `${window.location.protocol}//${window.location.host}`;
 
+// ── Detección de dispositivo ──
+const IS_MOBILE = window.matchMedia('(hover: none) and (pointer: coarse)').matches 
+    || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+
 // ── Referencias DOM ──
 const welcomeScreen = document.getElementById('welcome-screen');
 const chatScreen = document.getElementById('chat-screen');
@@ -17,21 +21,66 @@ const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
 const globalLoader = document.getElementById('global-loader');
 const particlesContainer = document.getElementById('particles');
+const loadingScreen = document.getElementById('loading-screen');
 
 let isWaiting = false;
 let conversationHistory = []; // Historial de mensajes para memoria del bot
 
 // ── Inicialización ──
 document.addEventListener('DOMContentLoaded', () => {
-    initSithCursor();
+    checkBackendReady().then(() => {
+        // Backend listo — ocultar loader
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => loadingScreen.remove(), 700);
+        }
+        initApp();
+    });
+});
+
+async function checkBackendReady() {
+    const maxAttempts = 60; // 60 x 2s = 120s máximo
+    const interval = 2000;
+    
+    for (let i = 0; i < maxAttempts; i++) {
+        try {
+            const res = await fetch(`${API_BASE}/health`, { 
+                method: 'GET',
+                signal: AbortSignal.timeout(3000)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.status === 'ready') return true;
+                // Si aún cargando, seguir esperando
+            }
+        } catch (e) {
+            // Backend aún no responde, seguir intentando
+        }
+        await new Promise(r => setTimeout(r, interval));
+    }
+    // Si agotamos intentos, mostrar mensaje pero permitir usar igual
+    const subtitle = document.querySelector('.loading-subtitle');
+    if (subtitle) subtitle.textContent = 'El sistema está tardando más de lo esperado...';
+    return false;
+}
+
+function initApp() {
+    // No iniciar cursor Sith en móvil (no hay mouse)
+    if (!IS_MOBILE) {
+        initSithCursor();
+    }
     initEpicAnimations();
-    generateSaberSparks();
+    if (!IS_MOBILE) {
+        generateSaberSparks();
+    }
     setupEventListeners();
-    setupMagneticButtons();
-    setupParallax();
+    if (!IS_MOBILE) {
+        setupMagneticButtons();
+        setupParallax();
+    }
     initGlitchEffect();
     initForceInput();
-});
+}
 
 // ── 🗡️ CURSOR SITH CON TRAIL DE SABLE LÁSER ──
 function initSithCursor() {
@@ -557,7 +606,7 @@ function goToChat() {
 function createSupernovaExplosion() {
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    const particleCount = 25; // Reducido de 60 a 25
+    const particleCount = IS_MOBILE ? 12 : 25; // Móvil: 12, Desktop: 25
     
     const fragment = document.createDocumentFragment();
     

@@ -126,6 +126,19 @@ app.add_middleware(
 )
 
 # ──────────────────────────────────────────────────────────────
+# Health Check
+# ──────────────────────────────────────────────────────────────
+@app.get("/health")
+async def health_check():
+    """Verifica si el backend y el modelo están listos."""
+    is_ready = llm_model is not None
+    return {
+        "status": "ready" if is_ready else "loading",
+        "model_loaded": is_ready,
+        "rag_documents": rag_engine.get_stats()["total_documents"] if rag_engine else 0
+    }
+
+# ──────────────────────────────────────────────────────────────
 # Schemas
 # ──────────────────────────────────────────────────────────────
 class ChatRequest(BaseModel):
