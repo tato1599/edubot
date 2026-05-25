@@ -55,15 +55,6 @@
                     <polyline points="12 5 19 12 12 19"/>
                 </svg>
             </button>
-
-            <!-- Indicador de estado del sistema (no bloqueante) -->
-            <div id="system-status" class="system-status">
-                <span class="status-dot-pulse"></span>
-                <span class="status-text">Conectando...</span>
-                <div class="status-progress-bg">
-                    <div class="status-progress-fill"></div>
-                </div>
-            </div>
         </div>
         
         <div class="particles" id="particles"></div>
@@ -117,13 +108,6 @@
             </div>
             <p class="input-hint">Presiona Enter para enviar • Shift+Enter para nueva línea</p>
         </footer>
-
-        <!-- Overlay de carga cuando el modelo aún no está listo -->
-        <div id="chat-loading-overlay" class="chat-loading-overlay hidden">
-            <div class="chat-loader-ring"></div>
-            <div class="chat-loader-text" id="chat-loader-text">Inicializando modelo de IA...</div>
-            <div class="chat-loader-sub" id="chat-loader-sub">Esto puede tomar unos minutos la primera vez</div>
-        </div>
     </section>
 
     <!-- Indicador de carga global -->

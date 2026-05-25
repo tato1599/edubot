@@ -21,97 +21,12 @@ const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
 const globalLoader = document.getElementById('global-loader');
 const particlesContainer = document.getElementById('particles');
-const systemStatus = document.getElementById('system-status');
-const statusText = systemStatus?.querySelector('.status-text');
-const statusProgressFill = systemStatus?.querySelector('.status-progress-fill');
-const chatLoadingOverlay = document.getElementById('chat-loading-overlay');
-const chatLoaderText = document.getElementById('chat-loader-text');
-const chatLoaderSub = document.getElementById('chat-loader-sub');
 
 let isWaiting = false;
-let conversationHistory = [];
-let backendReady = false;
-let healthCheckInterval = null;
+let conversationHistory = []; // Historial de mensajes para memoria del bot
 
-// ── Inicialización: mostrar UI inmediatamente, carga en segundo plano ──
+// ── Inicialización ──
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    startHealthPolling();
-});
-
-// Polling de /health en segundo plano (no bloquea la UI)
-async function startHealthPolling() {
-    const poll = async () => {
-        try {
-            const res = await fetch(`${API_BASE}/health`, {
-                method: 'GET',
-                signal: AbortSignal.timeout(5000)
-            });
-            if (!res.ok) throw new Error('health not ok');
-            const data = await res.json();
-            updateSystemStatus(data);
-            
-            if (data.status === 'ready') {
-                backendReady = true;
-                if (healthCheckInterval) {
-                    clearInterval(healthCheckInterval);
-                    healthCheckInterval = null;
-                }
-            }
-        } catch (e) {
-            // Backend aún no responde (ni siquiera arrancó)
-            updateSystemStatus({
-                status: 'loading',
-                stage: 'initializing',
-                stage_name: 'Iniciando servidor...',
-                progress: 0.0
-            });
-        }
-    };
-    
-    // Primera llamada inmediata
-    await poll();
-    // Luego cada 2 segundos hasta que esté listo
-    if (!backendReady) {
-        healthCheckInterval = setInterval(poll, 2000);
-    }
-}
-
-function updateSystemStatus(data) {
-    if (!systemStatus || !statusText || !statusProgressFill) return;
-    
-    // Actualizar texto
-    const stageName = data.stage_name || (data.status === 'ready' ? 'Sistema listo' : 'Cargando...');
-    statusText.textContent = stageName;
-    
-    // Actualizar barra de progreso real
-    const progress = Math.max(0, Math.min(1, data.progress || 0));
-    statusProgressFill.style.width = `${Math.round(progress * 100)}%`;
-    
-    // Actualizar clases de estado
-    systemStatus.classList.remove('ready', 'error');
-    if (data.status === 'ready') {
-        systemStatus.classList.add('ready');
-    } else if (data.stage === 'error') {
-        systemStatus.classList.add('error');
-    }
-    
-    // Si el overlay de carga del chat está visible, actualizarlo también
-    if (chatLoaderText && !chatLoadingOverlay?.classList.contains('hidden')) {
-        chatLoaderText.textContent = stageName;
-    }
-    if (chatLoaderSub && !chatLoadingOverlay?.classList.contains('hidden')) {
-        if (data.status === 'ready') {
-            chatLoaderSub.textContent = '¡Listo! Redirigiendo...';
-        } else if (data.stage === 'model') {
-            chatLoaderSub.textContent = 'Descargando pesos del modelo (varios cientos de MB)...';
-        } else {
-            chatLoaderSub.textContent = 'Esto puede tomar unos minutos la primera vez';
-        }
-    }
-}
-
-function initApp() {
     if (!IS_MOBILE) {
         initSithCursor();
     }
@@ -126,7 +41,7 @@ function initApp() {
     }
     initGlitchEffect();
     initForceInput();
-}
+});
 
 // ── 🗡️ CURSOR SITH CON TRAIL DE SABLE LÁSER ──
 function initSithCursor() {
@@ -501,21 +416,6 @@ function setupParallax() {
 // ── Event Listeners ──
 function setupEventListeners() {
     startBtn.addEventListener('click', (e) => {
-        if (!backendReady) {
-            // Mostrar overlay de carga dentro del chat mientras el modelo se inicializa
-            showChatLoadingOverlay();
-            // Escuchar cuando esté listo para hacer la transición automática
-            const checkReady = setInterval(() => {
-                if (backendReady) {
-                    clearInterval(checkReady);
-                    hideChatLoadingOverlay();
-                    startBtn.classList.add('clicked');
-                    setTimeout(() => goToChat(), 300);
-                }
-            }, 500);
-            return;
-        }
-        
         // Efecto visual de activación
         startBtn.classList.add('clicked');
         
@@ -734,24 +634,6 @@ function switchToChatSimple() {
             "¿En qué puedo ayudarte hoy?"
         );
     }, 300);
-}
-
-// ── ⏳ OVERLAY DE CARGA DENTRO DEL CHAT ──
-function showChatLoadingOverlay() {
-    if (!chatLoadingOverlay) return;
-    welcomeScreen.classList.add('hidden');
-    chatScreen.classList.remove('hidden');
-    chatLoadingOverlay.classList.remove('hidden');
-    
-    // Actualizar texto según el estado real
-    if (chatLoaderText && statusText) {
-        chatLoaderText.textContent = statusText.textContent;
-    }
-}
-
-function hideChatLoadingOverlay() {
-    if (!chatLoadingOverlay) return;
-    chatLoadingOverlay.classList.add('hidden');
 }
 
 // ── 🧹 LIMPIAR TODO ESTADO DE ANIMACIONES ──

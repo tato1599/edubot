@@ -987,139 +987,8 @@ body::after {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   MOBILE OPTIMIZATIONS & LOADING SCREEN
+   MOBILE OPTIMIZATIONS
    ═══════════════════════════════════════════════════════════ */
-
-/* ── Indicador de estado del sistema (no bloqueante) ── */
-.system-status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.6rem;
-    padding: 0.5rem 1rem;
-    background: rgba(220, 38, 38, 0.08);
-    border: 1px solid rgba(220, 38, 38, 0.2);
-    border-radius: 999px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    transition: all 0.4s ease;
-    margin-top: 0.5rem;
-    flex-wrap: wrap;
-    row-gap: 0.3rem;
-}
-
-.system-status.ready {
-    background: rgba(34, 197, 94, 0.08);
-    border-color: rgba(34, 197, 94, 0.3);
-    color: #86efac;
-}
-
-.system-status.error {
-    background: rgba(220, 38, 38, 0.12);
-    border-color: rgba(220, 38, 38, 0.4);
-    color: #fca5a5;
-}
-
-.status-dot-pulse {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--tec-gold);
-    box-shadow: 0 0 8px var(--tec-gold);
-    animation: statusDotPulse 1.5s ease-in-out infinite;
-    flex-shrink: 0;
-}
-
-.system-status.ready .status-dot-pulse {
-    background: #22c55e;
-    box-shadow: 0 0 8px #22c55e;
-    animation: none;
-}
-
-.system-status.error .status-dot-pulse {
-    background: #ef4444;
-    box-shadow: 0 0 8px #ef4444;
-    animation: none;
-}
-
-@keyframes statusDotPulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.7); }
-}
-
-.status-text {
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.status-progress-bg {
-    width: 80px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.status-progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--tec-red), var(--tec-gold));
-    border-radius: 4px;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.system-status.ready .status-progress-fill {
-    width: 100% !important;
-    background: #22c55e;
-}
-
-/* ── Overlay de carga dentro del chat ── */
-.chat-loading-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    background: rgba(2, 6, 23, 0.92);
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius-lg);
-    animation: fadeIn 0.3s ease;
-}
-
-.chat-loading-overlay.hidden {
-    display: none;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.chat-loader-ring {
-    width: 48px;
-    height: 48px;
-    border: 3px solid rgba(220, 38, 38, 0.15);
-    border-top-color: var(--tec-red-light);
-    border-right-color: var(--tec-gold);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-.chat-loader-text {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    text-align: center;
-    padding: 0 1rem;
-}
-
-.chat-loader-sub {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-}
 
 /* ── Touch device detection (no hover, coarse pointer) ── */
 @media (hover: none) and (pointer: coarse) {
@@ -1205,15 +1074,6 @@ body::after {
     /* Typing */
     .typing { padding: 1rem 1.25rem; }
     .typing-dot { width: 7px; height: 7px; }
-
-    /* System status badge */
-    .system-status { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
-    .status-progress-bg { width: 60px; }
-
-    /* Chat loader overlay */
-    .chat-loader-ring { width: 40px; height: 40px; }
-    .chat-loader-text { font-size: 0.85rem; }
-    .chat-loader-sub { font-size: 0.7rem; }
 
     /* Reduce scanline effect on mobile for performance */
     body::after { opacity: 0.5; }
