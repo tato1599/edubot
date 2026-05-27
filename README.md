@@ -1,338 +1,364 @@
-# EduBot - Agente Escolar Inteligente
+# EduBot v2.0 - Agente Escolar Inteligente
 
-> **Asistente conversacional de trámites escolares y nutrición SMAE con RAG e IA local.**
+> **Asistente conversacional de tramites escolares y nutricion SMAE con RAG vectorial e IA local.**
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20DB-purple)](https://www.trychroma.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue?logo=docker)](https://docker.com/)
 [![License](https://img.shields.io/badge/Licencia-MIT-green.svg)]()
 
-## ¿Qué es EduBot?
+## ¿Que es EduBot?
 
-EduBot es un asistente virtual que responde preguntas sobre **trámites escolares** (inscripciones, reinscripciones, becas, constancias, titulación) y **nutrición escolar basada en el SMAE** (Sistema Mexicano de Alimentos Equivalentes).
+EduBot es un asistente virtual que responde preguntas sobre **tramites escolares** (inscripciones, reinscripciones, becas, constancias, titulacion) y **nutricion escolar basada en el SMAE** (Sistema Mexicano de Alimentos Equivalentes).
 
-Todo funciona **100% local**: el modelo de lenguaje y los embeddings corren en tu computadora, sin depender de APIs externas ni conexión a Internet después de la primera descarga.
+Todo funciona **100% local**: el modelo de lenguaje y los embeddings corren en tu computadora, sin depender de APIs externas.
 
-### ¿Por qué existe este proyecto?
+### Arquitectura v2.0 (Enterprise)
 
-- **Problema:** Los estudiantes pierden tiempo buscando información de trámites dispersa en PDFs y sitios web. Además, no tienen acceso fácil a información nutricional confiable basada en el SMAE.
-- **Solución:** Un chatbot inteligente que responde con información exacta extraída de documentos oficiales, usando técnicas de RAG (Retrieval Augmented Generation) para no alucinar respuestas.
-
----
-
-## 🚀 Características principales
-
-| Característica | Descripción |
-|----------------|-------------|
-| **RAG local** | Recuperación semántica sobre documentos JSON de trámites y tablas SMAE |
-| **IA 100% local** | Modelo `Qwen2-1.5B-Instruct` ejecutándose en GPU/CPU sin APIs externas |
-| **Frontend premium** | Interfaz con glassmorphism, gradientes animados y microinteracciones GSAP |
-| **Documentación académica** | Contenido LaTeX listo para pegar en Overleaf |
+- **Base de datos vectorial ChromaDB** con persistencia en disco e indice HNSW
+- **Backend modular** con servicios separados (RAG, LLM), middlewares, logging JSON
+- **Rate limiting** y request tracing
+- **Docker + Docker Compose** listo para produccion
+- **Tests automatizados** con pytest
+- **Configuracion por variables de entorno**
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 edubot/
 ├── backend/
-│   ├── main.py                 # API FastAPI (punto de entrada del backend)
-│   ├── src/
-│   │   └── rag_engine.py       # Motor de embeddings + búsqueda semántica
-│   └── data/
-│       ├── tramites.json       # Base de datos de trámites escolares
-│       └── smae.json           # Tablas de nutrición SMAE
-├── frontend/
-│   ├── index.html              # Interfaz principal
-│   ├── css/style.css           # Estilos glassmorphism
-│   └── js/app.js               # Animaciones GSAP + lógica del chat
-├── docs/
-│   ├── contenido.tex           # Cuerpo del documento LaTeX
-│   └── bibliografia.bib        # Referencias bibliográficas
-├── requirements.txt            # Dependencias Python
-└── start.sh                    # Script de inicio rápido (opcional)
+│   ├── app/
+│   │   ├── core/           # Configuracion, logging
+│   │   ├── models/         # Schemas Pydantic
+│   │   ├── services/       # RAG Service, LLM Service
+│   │   ├── api/            # Rutas, middlewares
+│   │   └── utils/          # Query expansion
+│   ├── data/               # Fuentes de conocimiento JSON
+│   ├── chroma_db/          # Persistencia ChromaDB
+│   ├── tests/              # Tests con pytest
+│   └── main.py             # Entry point FastAPI
+├── frontend/               # UI HTML/CSS/JS
+├── docs/                   # Documentacion LaTeX
+├── Dockerfile              # Multi-stage build
+├── docker-compose.yml      # Orquestacion completa
+├── nginx.conf              # Reverse proxy
+├── Makefile                # Comandos estandar
+├── requirements.txt
+├── .env.example            # Configuracion de ejemplo
+└── start.sh                # Inicio rapido
 ```
-
-### Guía rápida para el equipo de desarrollo
-
-| Archivo | ¿Qué hace? | ¿Cuándo modificarlo? |
-|---------|-----------|---------------------|
-| `backend/main.py` | API FastAPI, endpoints `/chat`, `/stats`, carga del modelo LLM | Agregar endpoints, cambiar modelo, ajustar prompt del sistema |
-| `backend/src/rag_engine.py` | Carga JSON, genera embeddings, búsqueda por similitud coseno | Agregar nuevos documentos, cambiar modelo de embeddings, ajustar top_k |
-| `backend/data/*.json` | Fuentes de conocimiento (trámites y nutrición) | Actualizar información de trámites o tablas SMAE |
-| `frontend/index.html` | Estructura visual del chat | Cambiar textos, agregar secciones UI |
-| `frontend/css/style.css` | Estilos visuales (glassmorphism, animaciones) | Ajustar colores, tamaños, animaciones |
-| `frontend/js/app.js` | Lógica del cliente: envía mensajes, recibe respuestas, animaciones | Cambiar URL del backend, agregar funcionalidades del chat |
-| `docs/contenido.tex` | Contenido académico del proyecto | Actualizar secciones del documento LaTeX |
 
 ---
 
-## ⚙️ Requisitos
+## Requisitos
 
-- **Python 3.10+**
+- **Python 3.11+**
 - **GPU NVIDIA con CUDA** (recomendado) o CPU
-- **~4 GB de VRAM** para GPU / **~6 GB de RAM** para CPU
-- **Conexión a Internet** (solo la primera vez para descargar modelos)
-
-### Dependencias principales
-
-Las dependencias están listadas en `requirements.txt`. Las más importantes son:
-
-- `fastapi` + `uvicorn` — Servidor web y API
-- `transformers` + `torch` — Modelo de lenguaje e inferencia
-- `sentence-transformers` — Modelo de embeddings para RAG
-- `numpy` — Operaciones numéricas
+- **~2-3 GB de VRAM** para GPU (3B en 4-bit) / **~6 GB de RAM** para CPU
+- **Docker** (opcional, para despliegue)
 
 ---
 
-## 🛠️ Instalación
+## Instalacion
+
+### Opcion A: Local (desarrollo)
 
 ```bash
-# 1. Clonar el repositorio
-git clone git@github.com:tato1599/edubot.git
-cd edubot
-
-# 2. Crear entorno virtual (recomendado)
+# 1. Clonar
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# o: venv\Scripts\activate  # Windows
+source venv/bin/activate
 
-# 3. Instalar dependencias
+# 2. Instalar dependencias
 pip install -r requirements.txt
-```
 
----
+# 3. Configurar (opcional)
+cp .env.example .env
+# Editar .env segun necesites
 
-## ▶️ Ejecución
-
-### Opción A: Manual (desarrollo)
-
-**1. Iniciar el backend**
-
-```bash
-cd edubot
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-> **Nota:** La primera vez descargará automáticamente:
-> - `all-MiniLM-L6-v2` (~80 MB) para embeddings
-> - `Qwen2-1.5B-Instruct` (~3 GB) para el chat
->
-> La descarga inicial puede tardar 5–15 minutos según tu conexión. Los modelos se cachean para usos posteriores.
-
-**2. Abrir el frontend**
-
-Abre directamente en tu navegador:
-
-```
-edubot/frontend/index.html
-```
-
-O usa un servidor estático para evitar restricciones CORS:
-
-```bash
-cd edubot/frontend
-python -m http.server 3000
-```
-
-Luego visita: [http://localhost:3000](http://localhost:3000)
-
-### Opción B: Script de inicio rápido
-
-```bash
+# 4. Iniciar
 ./start.sh
+# o: make dev
 ```
 
-*(Si existe y está configurado en tu entorno)*
-
----
-
-## 💬 Cómo usar el chat
-
-1. Haz clic en **"Iniciar conversación"**
-2. Escribe tu pregunta sobre trámites o nutrición SMAE
-3. EduBot responderá usando **únicamente** la información de los documentos JSON
-
-### Ejemplos de preguntas
-
-| Tema | Ejemplo de pregunta |
-|------|---------------------|
-| Trámites | "¿Qué necesito para inscribirme si soy extranjero?" |
-| Reinscripción | "¿Cómo es el proceso de reinscripción?" |
-| SMAE | "¿Cuántas calorías tiene una porción de fruta?" |
-| Menús | "Recomiéndame un menú escolar para primaria" |
-| Becas | "¿Qué becas hay por excelencia académica?" |
-
----
-
-## 🌐 Compartir con compañeros (túnel público)
-
-Para que tus compañeros vean el proyecto desde su celular o computadora, necesitas exponerlo a Internet. EduBot ahora puede servirse todo desde un solo puerto (frontend + backend juntos).
-
-### Opción rápida: LocalTunnel (con npx)
+### Opcion B: Docker (produccion)
 
 ```bash
-# Desde la carpeta del proyecto
+# Todo en un comando
+./docker-start.sh
+
+# O manual:
+docker-compose build
+docker-compose up -d
+```
+
+Accede a:
+- **App**: http://localhost
+- **API**: http://localhost:8000
+- **Health**: http://localhost:8000/health
+
+---
+
+## Uso
+
+### Comandos Make
+
+```bash
+make install      # Instalar dependencias
+make dev          # Modo desarrollo con reload
+make test         # Ejecutar tests
+make docker-build # Construir imagen Docker
+make docker-up    # Iniciar con Docker
+make clean        # Limpiar cache
+```
+
+### Tests
+
+```bash
+./test.sh
+# o: make test
+```
+
+---
+
+## API Endpoints
+
+| Endpoint | Metodo | Descripcion |
+|----------|--------|-------------|
+| `/` | GET | Frontend |
+| `/health` | GET | Estado de carga con progreso |
+| `/status` | GET | Estado completo del sistema |
+| `/stats` | GET | Estadisticas del RAG |
+| `/chat` | POST | Chat sincrono |
+| `/chat/stream` | POST | Chat con streaming SSE |
+| `/api/*` | - | Rutas con prefijo `/api/` |
+
+### Headers de respuesta
+
+Todas las respuestas incluyen:
+- `X-Request-ID`: ID unico de traza
+- `X-Response-Time`: Tiempo de respuesta en ms
+- `X-RateLimit-Limit`: Limite de peticiones
+- `X-RateLimit-Remaining`: Peticiones restantes
+
+---
+
+## Configuracion
+
+Variables de entorno (ver `.env.example`):
+
+| Variable | Default | Descripcion |
+|----------|---------|-------------|
+| `MODEL_NAME` | Qwen/Qwen2.5-3B-Instruct | Modelo de lenguaje (3B para GPUs de 8GB) |
+| `LOAD_IN_4BIT` | true | Quantization 4-bit (NF4) |
+| `TEMPERATURE` | 0.2 | Creatividad (0-1) |
+| `TOP_K_RETRIEVAL` | 5 | Documentos recuperados |
+| `ENABLE_QUERY_CACHE` | true | Cache de queries |
+| `RATE_LIMIT_REQUESTS` | 60 | Peticiones/minuto |
+| `LOG_FORMAT` | json | Formato de logs |
+
+---
+
+## Docker
+
+### Estructura
+
+```
+nginx (puerto 80)
+  └── proxy a edubot:8000
+      
+edubot (puerto 8000)
+  ├── FastAPI + LLM
+  └── ChromaDB persistido en volumen
+```
+
+### Volumenes
+
+- `./backend/chroma_db`: Persistencia de embeddings
+- `huggingface_cache`: Cache de modelos (no se re-descargan)
+- `./backend/data`: Datos JSON (actualizables sin rebuild)
+
+---
+
+## Caracteristicas tecnicas v2.0
+
+### RAG (Retrieval-Augmented Generation)
+
+- **ChromaDB** con indice HNSW optimizado (`construction_ef=128`, `M=16`)
+- **Persistencia en disco**: embeddings no se recalculan al reiniciar
+- **Cache de queries**: respuestas frecuentes son instantaneas
+- **Batch indexing**: indexa 100 documentos por lote
+- **Filtrado por fuente**: busca solo en `tramites`, `smae`, etc.
+- **Boosting semantico**: corrige confusion entre semestres (primer vs segundo)
+
+### LLM
+
+- **Qwen2.5-3B-Instruct** con quantization 4-bit (NF4)
+- **Streaming SSE**: respuestas token por token
+- **Historial de conversacion**: mantiene contexto (ultimos 6 mensajes)
+- **Query expansion**: sinonimos automaticos para mejor recuperacion
+- **Bloqueo de idioma**: sanitizacion automatica que fuerza respuestas 100% en espanol
+
+### Middlewares
+
+- **Request logging**: cada peticion con ID, timing, status
+- **Rate limiting**: 60 peticiones/minuto por IP
+- **CORS**: configurado para multiples origenes
+- **Exception handlers**: errores del servidor traducidos automaticamente a espanol
+
+### Tunneling / Compartir
+
+- **Cloudflare Tunnel** integrado (recomendado, mas estable)
+- **LocalTunnel** como alternativa (con npx)
+- **API REST** para gestionar tunnels desde el frontend
+- **Panel de compartir** en la UI con copiar al portapapeles
+- **Scripts automatizados** (`scripts/tunnel.sh`)
+
+---
+
+## Compartir con companeros (Tunneling)
+
+### Opcion 1: Desde el Frontend (recomendado)
+
+1. Abre EduBot en tu navegador
+2. Haz click en el icono **Compartir** (🔗) en la esquina superior derecha
+3. Click en **"Crear Tunnel"**
+4. Espera 5-15 segundos
+5. La URL publica aparece — **copiala y compartela**
+
+### Opcion 2: Script de linea de comandos
+
+```bash
+# Modo interactivo (menu)
+./scripts/tunnel.sh
+
+# Crear tunnel directamente
+./scripts/tunnel.sh create cloudflare
+./scripts/tunnel.sh create localtunnel
+
+# Listar tunnels activos
+./scripts/tunnel.sh list
+
+# Cerrar todos los tunnels
+./scripts/tunnel.sh close all
+
+# Verificar dependencias
+./scripts/tunnel.sh status
+```
+
+### Opcion 3: Scripts legacy
+
+```bash
+# Cloudflare (mas estable)
+./expose-cloudflare.sh
+
+# LocalTunnel (alternativa)
 ./expose.sh
 ```
 
-Esto hace lo siguiente:
-1. Inicia el backend en `localhost:8000`
-2. Crea un túnel público gratuito con `localtunnel`
-3. Te da una URL tipo `https://nombre-aleatorio.loca.lt`
-4. **Copia esa URL y pásala a tus compañeros**
+### Instalar dependencias de tunneling
 
-**Requisito:** tener `npx` instalado (viene con Node.js). Si no lo tienes:
+**Cloudflare (recomendado):**
 ```bash
-# Instalar Node.js (incluye npx)
-sudo apt update && sudo apt install -y nodejs npm
-```
-
-### Opción estable: Cloudflare Tunnel
-
-```bash
-./expose-cloudflare.sh
-```
-
-**Requisito:** instalar `cloudflared` primero:
-```bash
-# Linux (Debian/Ubuntu)
+# Linux
 curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
 sudo dpkg -i cloudflared.deb
+
+# macOS
+brew install cloudflared
+
+# Windows
+# Descarga desde: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/
 ```
 
-Ventajas de Cloudflare:
-- ✅ Más estable que localtunnel
-- ✅ No caduca tan rápido
-- ✅ Funciona sin crear cuenta
+**LocalTunnel (alternativa):**
+```bash
+# Requiere Node.js
+npm install -g localtunnel
+# o usa npx directamente
+```
 
-### ¿Qué verán tus compañeros?
+### API de Tunneling
 
-Al abrir la URL, verán directamente la pantalla de bienvenida de EduBot con el botón **"Iniciar conversación"**. El chat funcionará completamente porque el backend y el frontend van juntos por el mismo túnel.
-
-> ⚠️ **Importante:** mantén la terminal abierta mientras quieras que esté disponible. Presiona `Ctrl+C` para cerrar.
+| Endpoint | Metodo | Descripcion |
+|----------|--------|-------------|
+| `/api/tunnel/create?provider=cloudflare` | POST | Crear tunnel |
+| `/api/tunnel/close/{id}` | POST | Cerrar tunnel |
+| `/api/tunnel/list` | GET | Listar activos |
+| `/api/tunnel/stats` | GET | Estadisticas |
+| `/api/tunnel/close-all` | POST | Cerrar todos |
 
 ---
 
-## 🏗️ Arquitectura técnica
+## Bloqueo de idioma (Espanol 100%)
 
-```
-Usuario
-  │
-  ▼
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│  Frontend   │────▶│  FastAPI     │────▶│  RAG Engine     │
-│  (HTML/CSS/ │     │  (/chat)     │     │  (Embeddings +  │
-│   JS/GSAP)  │     │              │     │   Búsqueda)     │
-└─────────────┘     └──────────────┘     └─────────────────┘
-                                                │
-                                                ▼
-                                         ┌──────────────┐
-                                         │  Documentos  │
-                                         │  JSON        │
-                                         │ (tramites /  │
-                                         │  smae)       │
-                                         └──────────────┘
-                                                │
-                                                ▼
-                                         ┌──────────────┐
-                                         │  Qwen2-1.5B  │
-                                         │  Instruct    │
-                                         │  (Local)     │
-                                         └──────────────┘
-```
+EduBot esta configurado para responder **exclusivamente en espanol**, incluso si el usuario escribe en otro idioma. Este comportamiento se garantiza mediante tres mecanismos:
 
-### Flujo de una consulta
+1. **System prompt estricto**: instrucciones explicitas al modelo para nunca usar ingles ni otros idiomas.
+2. **Sanitizacion de respuestas**: heuristica en el backend que detecta texto en ingles/portugues/frances y lo reemplaza automaticamente por una respuesta predefinida en espanol.
+3. **Exception handlers en espanol**: errores del servidor (404, 422, 500, etc.) se devuelven en espanol en lugar de ingles.
 
-1. **Recuperación (RAG):** La pregunta del usuario se convierte en un embedding y se buscan los 3 documentos JSON más similares por similitud coseno.
-2. **Generación:** Los documentos recuperados se inyectan en un *prompt* con formato de chat (`chat_template` de Qwen2).
-3. **Inferencia local:** El modelo `Qwen2-1.5B-Instruct` genera la respuesta condicionada al contexto, sin conexión a Internet.
+Si el modelo responde en otro idioma por error, el frontend recibe un evento de `correction` que reemplaza el mensaje instantaneamente.
 
 ---
 
-## 📝 Documentación LaTeX
-
-Los archivos de documentación están en `docs/`:
-
-- **`contenido.tex`**: Pégalo en el cuerpo de tu plantilla Overleaf (dentro de `\begin{document}` ... `\end{document}`).
-- **`bibliografia.bib`**: Importa este archivo como bibliografía en Overleaf.
-
-La documentación incluye: Resumen, Introducción, Marco Teórico (LLM, RAG, SMAE, FastAPI, GSAP), Diseño e Implementación, Resultados, Conclusiones y Trabajo Futuro.
-
----
-
-## 🔧 Solución de problemas
+## Solucion de problemas
 
 ### El backend no inicia
-- Verifica que PyTorch con CUDA esté instalado:
-  ```bash
-  python -c "import torch; print(torch.cuda.is_available())"
-  ```
-- Si no hay GPU, el modelo correrá en CPU (más lento pero funcional).
+```bash
+# Verificar GPU
+python -c "import torch; print(torch.cuda.is_available())"
 
-### El frontend no conecta al backend
-- Asegúrate de que el backend esté corriendo en `http://localhost:8000`.
-- Si abres `index.html` directamente, puede haber problemas de CORS. Usa `python -m http.server`.
-- Verifica que el frontend apunte a la URL correcta del backend en `frontend/js/app.js`.
+# Sin GPU, usar CPU
+export DEVICE=cpu
+export LOAD_IN_4BIT=false
+```
 
-### Respuestas lentas
-- La primera consulta puede tardar porque el modelo "calienta" la GPU. Las siguientes son más rápidas.
-- **Respuesta típica:** 2–5 segundos en GPU / 10–20 segundos en CPU.
+### ChromaDB bloqueado
+```bash
+# Eliminar lock files
+make clean
+rm -rf backend/chroma_db/*.lock
+```
 
-### Errores de memoria (OOM)
-- Si tu GPU tiene menos de 4 GB de VRAM, prueba corriendo en CPU.
-- Reduce `max_new_tokens` en `backend/main.py` si es necesario.
+### Modelo muy lento
+```bash
+# Reducir tokens
+export MAX_NEW_TOKENS=200
 
----
-
-## 👥 Guía para contribuir (equipo)
-
-1. **Trabaja en una rama:**
-   ```bash
-   git checkout -b feature/nombre-de-tu-cambio
-   ```
-
-2. **Haz commits pequeños y descriptivos:**
-   ```bash
-   git add .
-   git commit -m "feat: agrega endpoint de estadísticas de trámites"
-   ```
-
-3. **Actualiza los JSON de datos cuando sea necesario:**
-   - Si cambias información de trámites, actualiza `backend/data/tramites.json`
-   - Si cambias información del SMAE, actualiza `backend/data/smae.json`
-
-4. **Prueba local antes de subir:**
-   - Asegúrate de que el backend inicie sin errores.
-   - Verifica que el frontend se conecte correctamente.
-   - Prueba al menos 3 preguntas diferentes.
+# O usar modelo mas pequeño
+export MODEL_NAME=Qwen/Qwen2-1.5B-Instruct
+```
 
 ---
 
-## 📋 Roadmap / Tareas pendientes
+## Roadmap
 
-- [ ] Agregar más trámites escolares al JSON
-- [ ] Implementar historial de conversaciones persistente
-- [ ] Mejorar el prompt del sistema para respuestas más estructuradas
-- [ ] Agregar soporte para subir documentos PDF al RAG
-- [ ] Optimizar inferencia con `bitsandbytes` o `llama.cpp`
-- [ ] Dockerizar el proyecto para despliegue fácil
-- [ ] Tests automatizados para el RAG y los endpoints
-
----
-
-## 📄 Créditos
-
-- Modelo de lenguaje: [Qwen2-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2-1.5B-Instruct) (Alibaba Cloud)
-- Embeddings: [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) (SentenceTransformers)
-- Framework backend: [FastAPI](https://fastapi.tiangolo.com/) + [Transformers](https://huggingface.co/docs/transformers/)
-- Animaciones: [GSAP](https://greensock.com/gsap/)
+- [x] Base de datos vectorial (ChromaDB)
+- [x] Arquitectura modular (services, api, core)
+- [x] Docker + Docker Compose
+- [x] Tests automatizados
+- [x] Rate limiting + logging
+- [x] Configuracion por .env
+- [ ] Soporte para subir PDFs al RAG
+- [ ] Historial persistente de conversaciones (SQLite/ChromaDB)
+- [ ] Multi-modelo (seleccionar modelo por endpoint)
+- [ ] Panel de administracion web
+- [ ] Metrics Prometheus
 
 ---
 
-## 📜 Licencia
+## Creditos
 
-Este proyecto es de uso académico. Puedes usarlo, modificarlo y distribuirlo libremente mencionando la fuente.
+- Modelo: [Qwen2.5-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct)
+- Embeddings: [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
+- Vector DB: [ChromaDB](https://www.trychroma.com/)
+- Framework: [FastAPI](https://fastapi.tiangolo.com/) + [Transformers](https://huggingface.co/docs/transformers/)
 
 ---
 
-> **¿Preguntas o problemas?** Abre un issue en GitHub o contacta al equipo de desarrollo.
+## Licencia
+
+Uso academico. Puedes usarlo, modificarlo y distribuirlo libremente mencionando la fuente.

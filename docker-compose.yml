@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  edubot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edubot
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistencia de ChromaDB
+      - ./backend/chroma_db:/app/backend/chroma_db
+      # Cache de HuggingFace (modelos)
+      - huggingface_cache:/app/.cache/huggingface
+      # Datos (para actualizar sin rebuild)
+      - ./backend/data:/app/backend/data
+    environment:
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - RATE_LIMIT_REQUESTS=60
+      - RATE_LIMIT_WINDOW=60
+      - ENABLE_QUERY_CACHE=true
+      - TOP_K_RETRIEVAL=5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 12G
+        reservations:
+          memory: 4G
+
+  # Opcional: nginx como reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: edubot-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - edubot
+    restart: unless-stopped
+
+volumes:
+  huggingface_cache:

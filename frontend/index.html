@@ -11,60 +11,54 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <!-- Fondo animado -->
+    <!-- Fondo sutil -->
     <div class="bg-mesh">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
     </div>
 
-    <!-- Pantalla de inicio -->
+    <!-- Pantalla de inicio tipo Gemini -->
     <section id="welcome-screen" class="screen welcome-screen">
-        <div class="welcome-content">
-            <div class="logo-container">
-                <div class="logo-ring ring-1"></div>
-                <div class="logo-ring ring-2"></div>
-                <div class="logo-ring ring-3"></div>
-                <div class="logo-core">
+        <div class="welcome-center">
+            <div class="brand">
+                <div class="brand-logo-wrap">
                     <img src="/static/img/itcj.png" alt="Logo ITCJ" />
                 </div>
+                <h1 class="brand-title">EduBot</h1>
+                <p class="brand-subtitle">TecNM ITCJ</p>
             </div>
-            
-            <h1 class="welcome-title">
-                <span class="title-line">EduBot</span>
-                <span class="title-sub">TecNM ITCJ</span>
-            </h1>
-            
-            <p class="welcome-desc">
-                Tu asistente inteligente del Instituto Tecnológico de Ciudad Juárez. 
-                Trámites escolares, retícula ISC, nutrición SMAE, locales de comida y más.
-            </p>
-            
-            <div class="feature-pills">
-                <span class="pill">🎓 Trámites</span>
-                <span class="pill">📚 Retícula ISC</span>
-                <span class="pill">🍔 Locales de Comida</span>
-                <span class="pill">🥗 Nutrición SMAE</span>
-                <span class="pill">⚖️ Reglamento TecNM</span>
+
+            <div class="hero-input-wrap">
+                <div class="hero-input-box">
+                    <textarea
+                        id="welcome-input"
+                        placeholder="Pregunta sobre trámites, retícula, comida o nutrición..."
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button id="welcome-send" class="send-btn" aria-label="Enviar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            
-            <button id="start-btn" class="start-btn">
-                <span>Iniciar conversación</span>
-                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                </svg>
-            </button>
+
+            <div class="suggestion-chips">
+                <button class="chip" data-text="¿Qué necesito para inscribirme?">🎓 Trámites</button>
+                <button class="chip" data-text="Muéstrame la retícula de ISC">📚 Retícula</button>
+                <button class="chip" data-text="¿Qué vende Doña Pelos?">🍔 Comida</button>
+                <button class="chip" data-text="Dame una dieta económica">🥗 Nutrición</button>
+            </div>
         </div>
-        
-        <div class="particles" id="particles"></div>
     </section>
 
     <!-- Pantalla del chat -->
     <section id="chat-screen" class="screen chat-screen hidden">
         <header class="chat-header">
             <div class="header-left">
-                <button id="back-btn" class="icon-btn" aria-label="Volver">
+                <button id="back-btn" class="icon-btn" aria-label="Volver" title="Nueva conversación">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"/>
                         <polyline points="12 19 5 12 12 5"/>
@@ -84,6 +78,15 @@
                 </div>
             </div>
             <div class="header-right">
+                <button id="share-btn" class="icon-btn share-btn" aria-label="Compartir" title="Compartir con companeros">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"/>
+                        <circle cx="6" cy="12" r="3"/>
+                        <circle cx="18" cy="19" r="3"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                </button>
                 <span class="badge-rag">RAG</span>
             </div>
         </header>
@@ -94,8 +97,8 @@
 
         <footer class="chat-input-area">
             <div class="input-wrapper">
-                <textarea 
-                    id="message-input" 
+                <textarea
+                    id="message-input"
                     placeholder="Pregunta sobre trámites, retícula, comida o nutrición..."
                     rows="1"
                 ></textarea>
@@ -110,7 +113,65 @@
         </footer>
     </section>
 
-    <!-- Indicador de carga global -->
+    <!-- Panel de Compartir (overlay) -->
+    <div id="share-panel" class="share-panel hidden">
+        <div class="share-panel-inner">
+            <div class="share-header">
+                <h3>Compartir EduBot</h3>
+                <button id="close-share" class="icon-btn" aria-label="Cerrar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="share-content">
+                <p class="share-description">Comparte tu asistente con companeros mediante un tunnel seguro.</p>
+                
+                <div id="tunnel-status" class="tunnel-status">
+                    <span class="tunnel-indicator">No hay tunnel activo</span>
+                </div>
+                
+                <div id="tunnel-url-container" class="tunnel-url-container hidden">
+                    <label>URL Publica:</label>
+                    <div class="url-box">
+                        <input type="text" id="tunnel-url" readonly />
+                        <button id="copy-url-btn" class="btn-secondary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            Copiar
+                        </button>
+                    </div>
+                    <p class="tunnel-note">Esta URL es temporal. Compartela con tus companeros.</p>
+                </div>
+                
+                <div class="share-actions">
+                    <button id="create-tunnel-btn" class="btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                        Crear Tunnel
+                    </button>
+                    <button id="close-tunnel-btn" class="btn-danger hidden">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        Cerrar Tunnel
+                    </button>
+                </div>
+                
+                <div class="tunnel-loading hidden" id="tunnel-loading">
+                    <div class="loader-ring-small"></div>
+                    <span>Creando tunnel... (puede tomar 10-15 segundos)</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="global-loader" class="global-loader hidden">
         <div class="loader-ring"></div>
         <span>Cargando modelo de IA local...</span>
